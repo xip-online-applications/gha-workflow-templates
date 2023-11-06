@@ -43,13 +43,19 @@ on:
                 type: string
                 description: 'The helm version to install.'
                 default: 'latest'
-        secrets:
+            concurrency:
+                type: string
+                description: 'The identifier to use for managing currency between build.'
+                default: 'ci-${{ github.ref }}'
             git-crypt-key:
+                type: string
                 description: 'The base64 encoded git-crypt decryption key'
 
 permissions:
     contents: read
     id-token: write
+
+concurrency: ${{ inputs.concurrency }}
 
 jobs:
     job:
@@ -73,9 +79,9 @@ jobs:
                     token: ${{ secrets.GITHUB_TOKEN }}
 
             -   name: Decrypt with git-crypt
-                if: ${{ secrets.git-crypt-key }}
+                if: ${{ inputs.git-crypt-key }}
                 run: |
-                    echo ${{ secrets.git-crypt-key }} | base64 -d > /tmp/git-crypt.key
+                    echo ${{ inputs.git-crypt-key }} | base64 -d > /tmp/git-crypt.key
                     git-crypt unlock /tmp/git-crypt.key
                     rm /tmp/git-crypt.key
 
