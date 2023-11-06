@@ -1,0 +1,9 @@
+# IDEs
+.idea/
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db

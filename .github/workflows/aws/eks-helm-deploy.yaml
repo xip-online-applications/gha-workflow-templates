@@ -1,0 +1,93 @@
+name: Helm deploy to EKS
+description: 'Deploy a (local) Helm chart to an EKS cluster.'
+
+on:
+    workflow_call:
+        inputs:
+            environment:
+                type: string
+                description: 'The environment to build the container for.'
+                required: true
+            tag:
+                type: string
+                required: true
+            aws-role-arn:
+                type: string
+                description: 'The AWS role to assume and perform AWS actions with.'
+                required: true
+            aws-region:
+                type: string
+                description: 'The AWS region to push the image to.'
+                required: true
+            aws-session-name:
+                type: string
+                description: 'The AWS session name to use when assuming the AWS role.'
+                default: 'xip-gha-eks-deploy-helm'
+            aws-cluster-name:
+                type: string
+                description: 'The AWS EKS cluster name.'
+                required: true
+            aws-kubernetes-role-arn:
+                type: string
+                required: true
+                description: 'The AWS role to assume that has access to the Kubernetes namespace.'
+            runs-on-group:
+                type: string
+                description: 'The instance group name you want to run the job on.'
+                required: true
+            command:
+                type: string
+                description: 'The command to trigger the deployment. You can use two replacements: {0} = environment, {1} = tag.'
+                required: true
+            helm-version:
+                type: string
+                description: 'The helm version to install.'
+                default: 'latest'
+        secrets:
+            git-crypt-key:
+                description: 'The base64 encoded git-crypt decryption key'
+
+permissions:
+    contents: read
+    id-token: write
+
+jobs:
+    job:
+        name: Deploy ${{ inputs.environment }}
+        runs-on:
+            group: ${{ inputs.runs-on-group }}
+        environment: ${{ inputs.environment }}
+        steps:
+            -   name: Checkout repository
+                uses: actions/checkout@v3
+
+            -   name: Install packages
+                run: |
+                    sudo apt update
+                    sudo apt install -y jq git-crypt
+
+            -   name: Install helm
+                uses: azure/setup-helm@v3
+                with:
+                    version: ${{ inputs.helm-version }}
+                    token: ${{ secrets.GITHUB_TOKEN }}
+
+            -   name: Decrypt with git-crypt
+                if: ${{ secrets.git-crypt-key }}
+                run: |
+                    echo ${{ secrets.git-crypt-key }} | base64 -d > /tmp/git-crypt.key
+                    git-crypt unlock /tmp/git-crypt.key
+                    rm /tmp/git-crypt.key
+
+            -   name: Configure AWS Credentials
+                uses: aws-actions/configure-aws-credentials@v4
+                with:
+                    aws-region: ${{ inputs.aws-region }}
+                    role-to-assume: ${{ inputs.aws-role-arn }}
+                    role-session-name: ${{ inputs.aws-session-name }}
+
+            -   name: Configure Kubectl for EKS
+                run: aws eks update-kubeconfig --name "${{ inputs.aws-cluster-name }}" --role-arn "${{ inputs.aws-kubernetes-role-arn }}" --region "${{ inputs.aws-region }}"
+
+            -   name: Run deployment
+                run: ${{ format(inputs.command, inputs.environment, inputs.tag) }}
