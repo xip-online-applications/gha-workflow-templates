@@ -1,5 +1,4 @@
 name: Build & push container to ECR
-description: 'Builds a container and pushes it to Amazon ECR.'
 
 on:
     workflow_call:
