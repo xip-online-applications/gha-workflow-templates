@@ -1,6 +1,5 @@
 version: 2
 updates:
-    # Docker packages
   - package-ecosystem: "github-actions"
     directory: "/.github/workflows/aws"
     schedule:
