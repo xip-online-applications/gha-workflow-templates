@@ -1,5 +1,5 @@
 name: Helm deploy to EKS
-description: 'Deploy a (local) Helm chart to an EKS cluster.'
+description: 'Deploy a (local) Helm chart to an Amazon EKS cluster.'
 
 on:
     workflow_call:
