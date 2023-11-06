@@ -16,7 +16,7 @@ on:
                 type: string
                 description: 'The tag to apply to the container.'
                 required: true
-            aws-role:
+            aws-role-arn:
                 type: string
                 description: 'The AWS role to assume and perform AWS actions with.'
                 required: true
@@ -65,7 +65,7 @@ jobs:
                 uses: aws-actions/configure-aws-credentials@v4
                 with:
                     aws-region: ${{ inputs.aws-region }}
-                    role-to-assume: ${{ inputs.aws-role }}
+                    role-to-assume: ${{ inputs.aws-role-arn }}
                     role-session-name: ${{ inputs.aws-session-name }}
 
             -   name: Login to Amazon ECR
