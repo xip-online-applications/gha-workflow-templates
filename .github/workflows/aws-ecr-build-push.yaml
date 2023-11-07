@@ -38,10 +38,15 @@ on:
             build-args:
                 type: string
                 description: 'List of build-time variables.'
+                default: ''
             platforms:
                 type: string
                 description: 'The comma separated list of platforms to build the container for.'
                 default: 'linux/amd64'
+        secrets:
+            COMPOSER_AUTH_TOKEN:
+                description: 'The GitHub token to use for composer auth.'
+                required: false
 
 permissions:
     contents: read
@@ -78,7 +83,9 @@ jobs:
                     file: ${{ inputs.dockerfile }}
                     push: true
                     tags: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}
-                    build-args: ${{ inputs.build-args }}
+                    build-args: |-
+                        ${{ secrets.COMPOSER_AUTH_TOKEN && format('COMPOSER_AUTH={"github-oauth": {"github.com": "{0}"}}', secrets.COMPOSER_AUTH_TOKEN) || '' }}
+                        ${{ inputs.build-args }}
                     platforms: ${{ inputs.platforms }}
                     cache-from: type=gha
                     cache-to: type=gha,mode=max
