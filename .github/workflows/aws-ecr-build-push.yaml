@@ -84,7 +84,7 @@ jobs:
                     push: true
                     tags: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}
                     build-args: |-
-                        ${{ secrets.COMPOSER_AUTH_TOKEN && format('COMPOSER_AUTH={"github-oauth": {"github.com": "{0}"}}', secrets.COMPOSER_AUTH_TOKEN) || '' }}
+                        ${{ secrets.COMPOSER_AUTH_TOKEN && format('COMPOSER_AUTH={"github-oauth": {"github.com": "{0}"} }', secrets.COMPOSER_AUTH_TOKEN) || '' }}
                         ${{ inputs.build-args }}
                     platforms: ${{ inputs.platforms }}
                     cache-from: type=gha
