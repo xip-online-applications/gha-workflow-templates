@@ -44,18 +44,13 @@ on:
                 description: 'The comma separated list of platforms to build the container for.'
                 default: 'linux/amd64'
         secrets:
-            COMPOSER_AUTH_TOKEN:
+            composer-auth-token:
                 description: 'The GitHub token to use for composer auth.'
                 required: false
 
 permissions:
     contents: read
     id-token: write
-
-env:
-    composer_auth_base: '{"github-oauth": {"github.com": "{0}"}}'
-    composer_auth_formatted: '${{ format(env.composer_auth_base, secrets.COMPOSER_AUTH_TOKEN) }}'
-    composer_auth: '${{ secrets.COMPOSER_AUTH_TOKEN != '' && env.composer_auth_formatted || '' }}'
 
 jobs:
     job:
@@ -88,8 +83,8 @@ jobs:
                     file: ${{ inputs.dockerfile }}
                     push: true
                     tags: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}
-                    build-args: |-
-                        COMPOSER_AUTH=${{ env.composer_auth }}
+                    build-args: |
+                        COMPOSER_AUTH={"github-oauth": {"github.com": "${{ secrets.composer-auth-token }}"}}
                         ${{ inputs.build-args }}
                     platforms: ${{ inputs.platforms }}
                     cache-from: type=gha
