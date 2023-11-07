@@ -49,6 +49,7 @@ on:
                 default: 'ci-${{ github.ref }}'
         secrets:
             git-crypt-key:
+                required: false
                 description: 'The base64 encoded git-crypt decryption key'
 
 permissions:
