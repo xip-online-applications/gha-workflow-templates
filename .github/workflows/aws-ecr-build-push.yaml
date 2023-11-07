@@ -54,6 +54,8 @@ permissions:
 
 env:
     composer_auth_base: 'COMPOSER_AUTH={"github-oauth": {"github.com": "{0}"}}'
+    composer_auth: |-
+        ${{ secrets.COMPOSER_AUTH_TOKEN != '' && format(env.composer_auth_base, secrets.COMPOSER_AUTH_TOKEN) || '' }}
 
 jobs:
     job:
@@ -87,7 +89,7 @@ jobs:
                     push: true
                     tags: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}
                     build-args: |-
-                        ${{ secrets.COMPOSER_AUTH_TOKEN != '' && format(env.composer_auth_base, secrets.COMPOSER_AUTH_TOKEN) || '' }}
+                        ${{ env.composer_auth }}
                         ${{ inputs.build-args }}
                     platforms: ${{ inputs.platforms }}
                     cache-from: type=gha
