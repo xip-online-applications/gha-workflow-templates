@@ -79,9 +79,11 @@ jobs:
                     token: ${{ secrets.GITHUB_TOKEN }}
 
             -   name: Decrypt with git-crypt
-                if: ${{ inputs.git-crypt-key }}
+                env:
+                    git_crypt_key: ${{ secrets.git-crypt-key }}
+                if: ${{ env.git_crypt_key != '' }}
                 run: |
-                    echo ${{ inputs.git-crypt-key }} | base64 -d > /tmp/git-crypt.key
+                    echo ${{ secrets.git-crypt-key }} | base64 -d > /tmp/git-crypt.key
                     git-crypt unlock /tmp/git-crypt.key
                     rm /tmp/git-crypt.key
 
