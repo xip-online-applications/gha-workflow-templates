@@ -20,15 +20,19 @@ runs:
     -   name: Install packages
         if: ${{ inputs.git-crypt-key }}
         run: sudo apt update && sudo apt install -y git-crypt
+        shell: bash
 
     -   name: Prepare git-crypt key file
         if: ${{ inputs.git-crypt-key }}
         run: echo $KEY | base64 -d > ${{ inputs.file-name }}
+        shell: bash
 
     -   name: Decrypt with git-crypt
         if: ${{ inputs.git-crypt-key }}
         run: git-crypt unlock ${{ inputs.file-name }}
+        shell: bash
 
     -   name: Remove git-crypt key file
         if: ${{ inputs.git-crypt-key && always() }}
         run: rm ${{ inputs.file-name }}
+        shell: bash
