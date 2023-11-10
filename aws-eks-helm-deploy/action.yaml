@@ -7,9 +7,15 @@ branding:
     color: 'blue'
 
 inputs:
+    command:
+        description: 'The command to trigger the deployment. You can use two replacements: {0} = environment, {1} = tag.'
+        required: true
     environment:
         description: 'The environment to build the container for.'
         required: true
+    tag:
+        description: 'The tag to use during the deployment.'
+        default: 'latest'
     aws-role-arn:
         description: 'The AWS role to assume and perform AWS actions with.'
         required: true
@@ -18,19 +24,13 @@ inputs:
         required: true
     aws-session-name:
         description: 'The AWS session name to use when assuming the AWS role.'
-        default: 'xip-gha-eks-deploy-helm'
+        default: 'xip-gha-aws-eks-helm-deploy'
     aws-cluster-name:
         description: 'The AWS EKS cluster name.'
         required: true
     aws-kubernetes-role-arn:
         description: 'The AWS role to assume that has access to the Kubernetes namespace.'
         required: true
-    command:
-        description: 'The command to trigger the deployment. You can use two replacements: {0} = environment, {1} = tag.'
-        required: true
-    tag:
-        description: 'The tag to use during the deployment.'
-        default: 'latest'
     helm-version:
         description: 'The helm version to install.'
         default: 'latest'

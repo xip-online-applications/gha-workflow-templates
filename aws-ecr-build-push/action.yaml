@@ -7,9 +7,6 @@ branding:
     color: 'blue'
 
 inputs:
-    environment:
-        description: 'The environment to build the container for.'
-        required: true
     repository:
         description: 'The repository name to push the image to.'
         required: true

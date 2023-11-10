@@ -19,11 +19,11 @@ inputs:
     helm-version:
         description: 'The helm version to install.'
         default: 'latest'
-    git-crypt-key:
-        description: 'The base64 encoded git-crypt decryption key'
-        required: false
     github-token:
         description: 'The GitHub token to use for fetching the helm installation.'
+        required: false
+    git-crypt-key:
+        description: 'The base64 encoded git-crypt decryption key'
         required: false
 
 runs:
