@@ -21,11 +21,14 @@ inputs:
     package-install-command:
         description: 'The command to run to install the packages.'
         default: 'npm ci'
-    deploy-command:
+    npm-command:
         description: 'The command to run to do the deployment. You can use one replacement: {0} = stage, {1} = `npm run serverless -- `.'
+        default: 'npm run serverless -- '
+    deploy-command:
+        description: 'The command to run to do the deployment. You can use one replacement: {0} = stage, {1} = {inputs.npm-command}.'
         default: '{1} deploy --stage {0}'
     post-deploy-command:
-        description: 'The commands to run after the deployment. One command per line. You can use one replacement: {0} = stage, {1} = `npm run serverless -- `.'
+        description: 'The commands to run after the deployment. One command per line. You can use one replacement: {0} = stage, {1} = {inputs.npm-command}.'
         default: ''
     node-version:
         description: 'The node version to setup'
@@ -53,10 +56,10 @@ runs:
         -   name: Deploy serverless
             shell: bash
             working-directory: '${{ inputs.chroot }}'
-            run: '${{ format(inputs.deploy-command, inputs.stage, "npm run serverless -- ") }}'
+            run: '${{ format(inputs.deploy-command, inputs.stage, inputs.npm-command) }}'
 
         -   name: Post deploy command
             if: inputs.post-deploy-command != ''
             shell: bash
             working-directory: '${{ inputs.chroot }}'
-            run: '${{ format(inputs.post-deploy-command, inputs.stage, "npm run serverless -- ") }}'
+            run: '${{ format(inputs.post-deploy-command, inputs.stage, inputs.npm-command) }}'
