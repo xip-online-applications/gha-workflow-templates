@@ -12,9 +12,9 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Git-crypt unlock
-              uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
+              uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@${{ github.ref }}
               with:
                 git-crypt-key: 'AEdJVENSWVBUS0VZAAAAAgAAAAAAAAABAAAABAAAAAAAAAADAAAAIISRqM2u8HMJg4Ev4IoJD9BG2qlfa6Pza8zhgZwipLOoAAAABQAAAEDZcLaTmNYQgiB+Hkjfr/lscNrNrl/fDQ2bDPPdHXLf7myTY3Xa1gujDGyrVKR8qQSl/r2JtOzyX6mx526BDkjTAAAAAA=='
 
             - name: Test encrypted file
-              uses: cat ./git-crypt-unlock/test/test.txt
+              run: cat ./git-crypt-unlock/test/test.txt
