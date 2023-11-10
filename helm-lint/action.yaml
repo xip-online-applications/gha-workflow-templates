@@ -22,35 +22,24 @@ inputs:
     git-crypt-key:
         description: 'The base64 encoded git-crypt decryption key'
         required: false
+    github-token:
+        description: 'The GitHub token to use for fetching the helm installation.'
+        required: false
 
 runs:
     using: 'composite'
     steps:
-        -   name: Install packages
-            shell: bash
-            run: sudo apt update && sudo apt install -y jq
-
         -   name: Install helm
             uses: azure/setup-helm@v3
             with:
                 version: ${{ inputs.helm-version }}
-#                token: ${{ secrets.GITHUB_TOKEN }}
+                token: ${{ inputs.github-token }}
 
         -   name: Git-crypt unlock
             if: ${{ inputs.git-crypt-key != '' }}
             uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
             with:
                 git-crypt-key: ${{ inputs.git-crypt-key }}
-
-#        -   name: Decrypt with git-crypt
-#            run: |
-#                KEY=${{ secrets.git-crypt-key }}
-#                if [ ! -z "$KEY" ]; then
-#                    sudo apt update && sudo apt install -y git-crypt
-#                    echo $KEY | base64 -d > /tmp/git-crypt.key
-#                    git-crypt unlock /tmp/git-crypt.key
-#                    rm /tmp/git-crypt.key
-#                fi
 
         -   name: Lint helm chart
             shell: bash
