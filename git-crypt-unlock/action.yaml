@@ -14,6 +14,11 @@ inputs:
 runs:
     using: 'composite'
     steps:
+        -   name: Install packages
+            run: |
+                sudo apt update
+                sudo apt install -y git-crypt
+
         -   name: Decrypt with git-crypt
             shell: bash
             run: |
