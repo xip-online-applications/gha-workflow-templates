@@ -8,47 +8,36 @@ branding:
 
 inputs:
     environment:
-        type: string
         description: 'The environment to build the container for.'
         required: true
     repository:
-        type: string
         description: 'The repository name to push the image to.'
         required: true
     aws-role-arn:
-        type: string
         description: 'The AWS role to assume and perform AWS actions with.'
         required: true
     aws-region:
-        type: string
         description: 'The AWS region to push the image to.'
         required: true
     aws-session-name:
-        type: string
         description: 'The AWS session name to use when assuming the AWS role.'
         default: 'xip-gha-aws-ecr-build-push'
     tag:
-        type: string
         description: 'The tag to apply to the container.'
         default: 'latest'
     context:
-        type: string
         description: 'The context to build the container from.'
         default: '.'
     dockerfile:
-        type: string
         description: 'The Dockerfile to use in the build.'
         default: 'Dockerfile'
     build-args:
-        type: string
         description: 'List of build-time variables.'
         default: ''
     target:
-        type: string
         description: 'The target to use in the build.'
         required: false
     platforms:
-        type: string
         description: 'The comma separated list of platforms to build the container for.'
         default: 'linux/amd64'
 
@@ -57,12 +46,8 @@ outputs:
         value: ${{ steps.login-ecr.outputs.registry }}
         description: 'The ECR registry the image has been pushed to.'
 
-permissions:
-    contents: read
-    id-token: write
-
 runs:
-    using: "composite"
+    using: 'composite'
     steps:
         -   name: Set up QEMU
             uses: docker/setup-qemu-action@v3

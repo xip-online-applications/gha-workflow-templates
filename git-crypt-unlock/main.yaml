@@ -1,0 +1,34 @@
+name: 'Git-crypt unlock'
+description: 'Unlock a git-crypt repository.'
+author: 'XIP Online Applications'
+
+branding:
+  icon: 'unlock'
+  color: 'blue'
+
+inputs:
+  git-crypt-key:
+    description: 'The base64 encoded git-crypt decryption key'
+    required: false
+  file-name:
+    description: 'The file name to use for the git-crypt key file.'
+    default: './git-crypt.key'
+
+runs:
+  using: 'composite'
+  steps:
+    -   name: Install packages
+        if: ${{ inputs.git-crypt-key }}
+        run: sudo apt update && sudo apt install -y git-crypt
+
+    -   name: Prepare git-crypt key file
+        if: ${{ inputs.git-crypt-key }}
+        run: echo $KEY | base64 -d > ${{ inputs.file-name }}
+
+    -   name: Decrypt with git-crypt
+        if: ${{ inputs.git-crypt-key }}
+        run: git-crypt unlock ${{ inputs.file-name }}
+
+    -   name: Remove git-crypt key file
+        if: ${{ inputs.git-crypt-key && always() }}
+        run: rm ${{ inputs.file-name }}
