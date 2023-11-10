@@ -37,6 +37,7 @@ runs:
 #                token: ${{ secrets.GITHUB_TOKEN }}
 
         -   name: Git-crypt unlock
+            if: ${{ inputs.git-crypt-key != '' }}
             uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
             with:
                 git-crypt-key: ${{ inputs.git-crypt-key }}
