@@ -25,9 +25,6 @@ inputs:
     aws-kubernetes-role-arn:
         description: 'The AWS role to assume that has access to the Kubernetes namespace.'
         required: true
-    runs-on-group:
-        description: 'The instance group name you want to run the job on.'
-        default: 'aws-eks-deployment-group'
     command:
         description: 'The command to trigger the deployment. You can use two replacements: {0} = environment, {1} = tag.'
         required: true
