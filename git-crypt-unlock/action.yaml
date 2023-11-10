@@ -12,7 +12,14 @@ inputs:
         required: true
 
 runs:
-    using: 'docker'
-    image: 'Dockerfile'
-    args:
-        - ${{ inputs.git-crypt-key }}
+    using: 'composite'
+    steps:
+        -   name: Decrypt with git-crypt
+            shell: bash
+            run: |
+                KEY="${{ inputs.git-crypt-key }}"
+                if [ ! -z "$KEY" ]; then
+                    echo $KEY | base64 -d > /tmp/git-crypt.key
+                    git-crypt unlock /tmp/git-crypt.key
+                    rm /tmp/git-crypt.key
+                fi
