@@ -3,6 +3,9 @@
 GIT_CRYPT_KEY="$1"
 GIT_CRYPT_FILE="/git-crypt.key"
 
+pwd
+ls -la
+
 # Decode git-crypt key to file
 echo "${GIT_CRYPT_KEY}" | base64 -d > "${GIT_CRYPT_FILE}"
 
