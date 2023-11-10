@@ -35,20 +35,20 @@ runs:
                 version: ${{ inputs.helm-version }}
                 token: ${{ secrets.GITHUB_TOKEN }}
 
-#        -   name: Git-crypt unlock
-#            uses: ../git-crypt-unlock
-#            with:
-#                git-crypt-key: ${{ inputs.git-crypt-key }}
+        -   name: Git-crypt unlock
+            uses: ../git-crypt-unlock
+            with:
+                git-crypt-key: ${{ inputs.git-crypt-key }}
 
-        -   name: Decrypt with git-crypt
-            run: |
-                KEY=${{ secrets.git-crypt-key }}
-                if [ ! -z "$KEY" ]; then
-                    sudo apt update && sudo apt install -y git-crypt
-                    echo $KEY | base64 -d > /tmp/git-crypt.key
-                    git-crypt unlock /tmp/git-crypt.key
-                    rm /tmp/git-crypt.key
-                fi
+#        -   name: Decrypt with git-crypt
+#            run: |
+#                KEY=${{ secrets.git-crypt-key }}
+#                if [ ! -z "$KEY" ]; then
+#                    sudo apt update && sudo apt install -y git-crypt
+#                    echo $KEY | base64 -d > /tmp/git-crypt.key
+#                    git-crypt unlock /tmp/git-crypt.key
+#                    rm /tmp/git-crypt.key
+#                fi
 
         - name: Lint helm chart
           run: ${{ format(inputs.command, inputs.environment, inputs.tag) }}
