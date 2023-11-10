@@ -10,6 +10,7 @@ following workflows:
 * [helm-lint](./helm-lint): Lint a [Helm](https://helm.sh/) chart;
 * [aws-ecr-build-push](./aws-ecr-build-push): Build and push a Docker image to [AWS ECR](https://aws.amazon.com/ecr/);
 * [aws-eks-helm-deploy](./aws-eks-helm-deploy): Deploy a local Helm chart to [AWS EKS](https://aws.amazon.com/eks/).
+* [aws-serverless-deploy](./aws-eks-helm-deploy): Deploy a local Helm chart to [AWS EKS](https://aws.amazon.com/eks/).
 
 ## Usage
 See inside each workflow directory for more information on how to use the workflow. Each workflow has a `README.md`.
