@@ -31,14 +31,12 @@ runs:
             run: sudo apt update && sudo apt install -y jq
 
         -   name: Install helm
-            shell: bash
             uses: azure/setup-helm@v3
             with:
                 version: ${{ inputs.helm-version }}
 #                token: ${{ secrets.GITHUB_TOKEN }}
 
         -   name: Git-crypt unlock
-            shell: bash
             uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
             with:
                 git-crypt-key: ${{ inputs.git-crypt-key }}
@@ -53,6 +51,6 @@ runs:
 #                    rm /tmp/git-crypt.key
 #                fi
 
-        - name: Lint helm chart
-          shell: bash
-          run: ${{ format(inputs.command, inputs.environment, inputs.tag) }}
+        -   name: Lint helm chart
+            shell: bash
+            run: ${{ format(inputs.command, inputs.environment, inputs.tag) }}
