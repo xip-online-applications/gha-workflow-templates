@@ -2,17 +2,19 @@ name: 'Test git-crypt-unlock'
 
 on:
     push:
+      branches:
+        - main
 
 jobs:
     job:
-        name: QA & tests
+        name: Test git-crypt-unlock
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
 
             - name: Git-crypt unlock
-              uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@${{ github.ref }}
+              uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
               with:
                 git-crypt-key: 'AEdJVENSWVBUS0VZAAAAAgAAAAAAAAABAAAABAAAAAAAAAADAAAAIISRqM2u8HMJg4Ev4IoJD9BG2qlfa6Pza8zhgZwipLOoAAAABQAAAEDZcLaTmNYQgiB+Hkjfr/lscNrNrl/fDQ2bDPPdHXLf7myTY3Xa1gujDGyrVKR8qQSl/r2JtOzyX6mx526BDkjTAAAAAA=='
 
