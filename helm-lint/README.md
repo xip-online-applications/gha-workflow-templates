@@ -1,4 +1,4 @@
-# helm-lint
+# xip-online-applications/gha-workflow-templates/helm-lint
 Lint a local helm chart in your own way.
 
 ## Inputs

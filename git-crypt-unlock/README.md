@@ -1,4 +1,4 @@
-# git-crypt-unlock
+# xip-online-applications/gha-workflow-templates/git-crypt-unlock
 Unlocks your repository using a git-crypt key. The action assumes you mount the entire git repository. The key
 should be base64 encoded.
 

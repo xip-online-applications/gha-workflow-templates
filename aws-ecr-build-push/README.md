@@ -1,4 +1,4 @@
-# aws-ecr-build-push
+# xip-online-applications/gha-workflow-templates/aws-ecr-build-push
 Build and push a Docker image to [AWS ECR](https://aws.amazon.com/ecr/). This workflow use the GitHub OIDC connector.
 
 ## Inputs

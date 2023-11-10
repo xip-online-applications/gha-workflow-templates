@@ -1,4 +1,4 @@
-# aws-eks-helm-deploy
+# xip-online-applications/gha-workflow-templates/aws-eks-helm-deploy
 Deploy a Helm chart to an AWS EKS cluster. This workflow use the GitHub OIDC connector.
 
 ## Inputs
