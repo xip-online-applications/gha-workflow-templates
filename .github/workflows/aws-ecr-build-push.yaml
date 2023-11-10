@@ -35,6 +35,10 @@ on:
                 type: string
                 description: 'The Dockerfile to use in the build.'
                 default: 'Dockerfile'
+            target:
+                type: string
+                description: 'The target to use in the build.'
+                required: false
             build-args:
                 type: string
                 description: 'List of build-time variables.'
@@ -44,9 +48,13 @@ on:
                 description: 'The comma separated list of platforms to build the container for.'
                 default: 'linux/amd64'
         secrets:
-            composer-auth-token:
-                description: 'The GitHub token to use for composer auth.'
+            build-args:
+                description: 'Secret build arguments.'
                 required: false
+        outputs:
+            registry:
+                value: ${{ jobs.job.outputs.registry }}
+                description: 'The ECR registry the image has been pushed to.'
 
 permissions:
     contents: read
@@ -54,8 +62,10 @@ permissions:
 
 jobs:
     job:
-        name: Build and push container
+        name: Build & push ${{ inputs.repository }}
         runs-on: ubuntu-latest
+        outputs:
+            registry: ${{ steps.login-ecr.outputs.registry }}
         steps:
             -   name: Checkout repository
                 uses: actions/checkout@v4
@@ -81,10 +91,11 @@ jobs:
                 with:
                     context: ${{ inputs.context }}
                     file: ${{ inputs.dockerfile }}
+                    target: ${{ inputs.target }}
                     push: true
                     tags: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}
-                    build-args: |
-                        COMPOSER_AUTH={"github-oauth": {"github.com": "${{ secrets.composer-auth-token }}"}}
+                    build-args: |-
+                        ${{ secrets.build-args }}
                         ${{ inputs.build-args }}
                     platforms: ${{ inputs.platforms }}
                     cache-from: type=gha
