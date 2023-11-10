@@ -3,16 +3,16 @@ description: 'Unlock a git-crypt repository.'
 author: 'XIP Online Applications'
 
 branding:
-  icon: 'unlock'
-  color: 'blue'
+    icon: 'unlock'
+    color: 'blue'
 
 inputs:
-  git-crypt-key:
-    description: 'The base64 encoded git-crypt decryption key'
-    required: true
+    git-crypt-key:
+        description: 'The base64 encoded git-crypt decryption key'
+        required: true
 
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.git-crypt-key }}
+    using: 'docker'
+    image: 'Dockerfile'
+    args:
+        - ${{ inputs.git-crypt-key }}

@@ -34,24 +34,26 @@ inputs:
     helm-version:
         description: 'The helm version to install.'
         default: 'latest'
+    github-token:
+        description: 'The GitHub token to use for fetching the helm installation.'
+        required: false
     git-crypt-key:
         description: 'The base64 encoded git-crypt decryption key'
         required: false
+        default: ''
 
 runs:
     using: 'composite'
     steps:
-        -   name: Install packages
-            run: sudo apt update && sudo apt install -y jq
-
         -   name: Install helm
             uses: azure/setup-helm@v3
             with:
                 version: ${{ inputs.helm-version }}
-                token: ${{ secrets.GITHUB_TOKEN }}
+                token: ${{ inputs.github-token }}
 
         -   name: Git-crypt unlock
-            uses: ../git-crypt-unlock
+            if: ${{ inputs.git-crypt-key != '' }}
+            uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
             with:
                 git-crypt-key: ${{ inputs.git-crypt-key }}
 
@@ -63,7 +65,9 @@ runs:
                 role-session-name: ${{ inputs.aws-session-name }}
 
         -   name: Configure Kubectl for EKS
+            shell: bash
             run: aws eks update-kubeconfig --name "${{ inputs.aws-cluster-name }}" --role-arn "${{ inputs.aws-kubernetes-role-arn }}" --region "${{ inputs.aws-region }}"
 
         -   name: Run deployment
+            shell: bash
             run: ${{ format(inputs.command, inputs.environment, inputs.tag) }}
