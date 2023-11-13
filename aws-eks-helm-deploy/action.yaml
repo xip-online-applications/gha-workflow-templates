@@ -36,10 +36,9 @@ inputs:
         default: 'latest'
     github-token:
         description: 'The GitHub token to use for fetching the helm installation.'
-        required: false
+        default: ${{ github.token }}
     git-crypt-key:
         description: 'The base64 encoded git-crypt decryption key'
-        required: false
         default: ''
 
 runs:
