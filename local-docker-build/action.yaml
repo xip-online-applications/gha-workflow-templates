@@ -9,7 +9,7 @@ branding:
 inputs:
     repository:
         description: 'The repository to apply to the container.'
-        default: 'localhost:5000/local/docker-build'
+        default: 'local/docker-build'
     tag:
         description: 'The tag to apply to the container.'
         default: 'latest'
@@ -30,9 +30,15 @@ inputs:
         default: 'linux/amd64'
 
 outputs:
+    repository:
+        value: ${{ inputs.repository }}
+        description: 'The repository.'
+    tag:
+        value: ${{ inputs.tag }}
+        description: 'The tag.'
     image:
         value: ${{ inputs.repository }}:${{ inputs.tag }}
-        description: 'The full repository with tag.'
+        description: 'The full image with tag.'
 
 runs:
     using: 'composite'
