@@ -29,3 +29,7 @@ updates:
     directory: "/helm-lint"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/local-docker-build"
+    schedule:
+      interval: "weekly"

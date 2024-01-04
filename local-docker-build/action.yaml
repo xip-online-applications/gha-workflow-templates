@@ -1,0 +1,58 @@
+name: 'Local Docker build'
+description: 'Build a Docker image locally for use during the action with GHA caching.'
+author: 'XIP Online Applications'
+
+branding:
+    icon: 'code'
+    color: 'blue'
+
+inputs:
+    repository:
+        description: 'The repository to apply to the container.'
+        default: 'localhost:5000/local/docker-build'
+    tag:
+        description: 'The tag to apply to the container.'
+        default: 'latest'
+    context:
+        description: 'The context to build the container from.'
+        default: '.'
+    dockerfile:
+        description: 'The Dockerfile to use in the build.'
+        default: 'Dockerfile'
+    build-args:
+        description: 'List of build-time variables.'
+        default: ''
+    target:
+        description: 'The target to use in the build.'
+        required: false
+    platforms:
+        description: 'The comma separated list of platforms to build the container for.'
+        default: 'linux/amd64'
+
+outputs:
+    image:
+        value: ${{ inputs.repository }}:${{ inputs.tag }}
+        description: 'The full repository with tag.'
+
+runs:
+    using: 'composite'
+    steps:
+        -   name: Set up QEMU
+            uses: docker/setup-qemu-action@v3
+
+        -   name: Set up Docker Buildx
+            uses: docker/setup-buildx-action@v3
+
+        -   name: Build and push
+            uses: docker/build-push-action@v5
+            with:
+                context: ${{ inputs.context }}
+                file: ${{ inputs.dockerfile }}
+                target: ${{ inputs.target }}
+                push: true
+                tags: ${{ inputs.repository }}:${{ inputs.tag }}
+                build-args: |
+                    ${{ inputs.build-args }}
+                platforms: ${{ inputs.platforms }}
+                cache-from: type=gha
+                cache-to: type=gha,mode=max
