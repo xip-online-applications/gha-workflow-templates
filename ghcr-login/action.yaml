@@ -1,0 +1,30 @@
+name: 'ghcr.io: login'
+description: 'Login to the the GitHub container registry (ghcr.io).'
+author: 'XIP Online Applications'
+
+branding:
+    icon: 'code'
+    color: 'blue'
+
+inputs:
+    username:
+        description: 'The username to use to push the image.'
+        default: ${{ github.actor }}
+    password:
+        description: 'The password to use to push the image, usually a GitHub token.'
+        default: ${{ github.token }}
+
+outputs:
+    registry:
+        value: ghcr.io
+        description: 'The ghcr.io registry the image has been pushed to.'
+
+runs:
+    using: 'composite'
+    steps:
+        -   name: Login to ghcr.io
+            uses: docker/login-action@v3
+            with:
+                registry: ghcr.io
+                username: ${{ inputs.username }}
+                password: ${{ inputs.password }}
