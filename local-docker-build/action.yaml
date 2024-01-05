@@ -55,10 +55,8 @@ runs:
                 context: ${{ inputs.context }}
                 file: ${{ inputs.dockerfile }}
                 target: ${{ inputs.target }}
-                push: true
+                load: true
                 tags: ${{ inputs.repository }}:${{ inputs.tag }}
                 build-args: |
                     ${{ inputs.build-args }}
                 platforms: ${{ inputs.platforms }}
-                cache-from: type=gha
-                cache-to: type=gha,mode=max
