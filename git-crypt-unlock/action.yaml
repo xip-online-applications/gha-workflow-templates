@@ -15,12 +15,6 @@ runs:
     using: 'composite'
     steps:
         -   name: Install packages
-            shell: bash
-            run: |
-                sudo apt update
-                sudo apt install -y git-crypt
-
-        -   name: Install packages
             uses: awalsh128/cache-apt-pkgs-action@latest
             with:
                 packages: git-crypt
