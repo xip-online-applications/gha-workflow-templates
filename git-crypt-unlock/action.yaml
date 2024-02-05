@@ -15,10 +15,10 @@ runs:
     using: 'composite'
     steps:
         -   name: Install packages
-            shell: bash
-            run: |
-                sudo apt update
-                sudo apt install -y git-crypt
+            uses: awalsh128/cache-apt-pkgs-action@latest
+            with:
+                packages: git-crypt
+                version: 1.0
 
         -   name: Decrypt with git-crypt
             shell: bash
