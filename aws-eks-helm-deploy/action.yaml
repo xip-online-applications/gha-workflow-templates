@@ -45,7 +45,7 @@ runs:
     using: 'composite'
     steps:
         -   name: Install helm
-            uses: azure/setup-helm@v3
+            uses: azure/setup-helm@v4
             with:
                 version: ${{ inputs.helm-version }}
                 token: ${{ inputs.github-token }}
