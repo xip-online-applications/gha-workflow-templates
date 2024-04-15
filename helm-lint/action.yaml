@@ -33,7 +33,6 @@ runs:
             uses: azure/setup-helm@v4
             with:
                 version: ${{ inputs.helm-version }}
-                token: ${{ inputs.github-token }}
 
         -   name: Git-crypt unlock
             if: ${{ inputs.git-crypt-key != '' }}
