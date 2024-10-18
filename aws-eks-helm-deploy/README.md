@@ -1,7 +1,9 @@
 # xip-online-applications/gha-workflow-templates/aws-eks-helm-deploy
+
 Deploy a Helm chart to an AWS EKS cluster. This workflow use the GitHub OIDC connector.
 
 ## Inputs
+
 * `command`: The command to trigger the deployment. You can use two replacements: {0} = `environment`, {1} = `tag`;
 * `environment`: The environment variable to use;
 * `tag`: The tag variable to use, defaults to `latest`;
@@ -15,4 +17,5 @@ Deploy a Helm chart to an AWS EKS cluster. This workflow use the GitHub OIDC con
 * `git-crypt-key`: the [base64 git-crypt key](../git-crypt-unlock) to use if you want to decrypt the repository.
 
 ## Outputs
-_none_
+
+### None

@@ -1,7 +1,9 @@
 # xip-online-applications/gha-workflow-templates/ghcr-login
+
 Login to the GitHub container registry (ghcr.io).
 
 ## Inputs
+
 * `aws-role-arn`: The AWS role to assume;
 * `aws-region`: The AWS region to assume the role in;
 * `aws-session-name`: The AWS session name, defaults to `xip-gha-aws-ecr-build-push`;
@@ -14,4 +16,5 @@ Login to the GitHub container registry (ghcr.io).
 * `platforms`: The [platforms](https://docs.docker.com/build/building/multi-platform/) to build for, defaults to `linux/amd64`.
 
 ## Outputs
+
 * `registry`: The ECR registry URL.
