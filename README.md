@@ -10,7 +10,7 @@ following workflows:
 
 * [git-crypt-unlock](./git-crypt-unlock): Unlock a repository that is encrypted with [git-crypt](https://github.com/AGWA/git-crypt);
 * [helm-lint](./helm-lint): Lint a [Helm](https://helm.sh/) chart;
-* [aws-ecr-build-push](./aws-ecr-build-push): Build and push a Docker image to [AWS ECR](https://aws.amazon.com/ecr/);
+* [aws-ecr-build-push](./aws-ecr-build-push): Build and push a container image to [AWS ECR](https://aws.amazon.com/ecr/);
 * [aws-eks-helm-deploy](./aws-eks-helm-deploy): Deploy a local Helm chart to [AWS EKS](https://aws.amazon.com/eks/).
 * [aws-serverless-deploy](./aws-eks-helm-deploy): Deploy a local Helm chart to [AWS EKS](https://aws.amazon.com/eks/).
 * [ghcr-build-push](./ghcr-build-push): Build a container and push it the GitHub container registry (ghcr.io).
@@ -28,7 +28,7 @@ on:
 jobs:
     job:
         name: Test git-crypt-unlock
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
