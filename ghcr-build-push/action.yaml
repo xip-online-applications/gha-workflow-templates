@@ -46,11 +46,10 @@ outputs:
 runs:
     using: 'composite'
     steps:
-        -   name: Set up QEMU
-            uses: docker/setup-qemu-action@v3
-
-        -   name: Set up Docker Buildx
-            uses: docker/setup-buildx-action@v3
+        -   name: Set up [qemu-user-static]
+            uses: awalsh128/cache-apt-pkgs-action@latest
+            with:
+                packages: qemu-user-static
 
         -   id: login
             name: Login to ghcr.io
@@ -60,15 +59,28 @@ runs:
                 password: ${{ inputs.password }}
 
         -   name: Build and push
-            uses: docker/build-push-action@v6
-            with:
-                context: ${{ inputs.context }}
-                file: ${{ inputs.dockerfile }}
-                target: ${{ inputs.target }}
-                push: true
-                tags: ${{ steps.login.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}
-                build-args: |
-                    ${{ inputs.build-args }}
-                platforms: ${{ inputs.platforms }}
-                cache-from: type=gha
-                cache-to: type=gha,mode=max
+            shell: bash
+            run: |
+                platforms=(${{ inputs.platforms }})
+                platform_args=""
+                for platform in "${platforms[@]}"; do
+                    platform_args+="--platform $platform "
+                done
+
+                build_args=(${{ inputs.build-args }})
+                build_args_str=""
+                for arg in "${build_args[@]}"; do
+                    build_args_str+="--build-arg $arg "
+                done
+
+                buildah build \
+                    $platform_args \
+                    --tag ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }} \
+                    --cache-from ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }} \
+                    --layers \
+                    --cache-to ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }} \
+                    $build_args_str \
+                    --target ${{ inputs.target }} \
+                    --file ${{ inputs.dockerfile }} \
+                    ${{ inputs.context }}
+                buildah push ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}

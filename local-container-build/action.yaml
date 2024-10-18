@@ -1,5 +1,5 @@
-name: 'AWS: ECR build & push'
-description: 'Build & push a container to AWS ECR.'
+name: 'Local container build'
+description: 'Build a container image locally for use during the action with GHA caching.'
 author: 'XIP Online Applications'
 
 branding:
@@ -8,17 +8,8 @@ branding:
 
 inputs:
     repository:
-        description: 'The repository name to push the image to.'
-        required: true
-    aws-role-arn:
-        description: 'The AWS role to assume and perform AWS actions with.'
-        required: true
-    aws-region:
-        description: 'The AWS region to push the image to.'
-        required: true
-    aws-session-name:
-        description: 'The AWS session name to use when assuming the AWS role.'
-        default: 'xip-gha-aws-ecr-build-push'
+        description: 'The repository to apply to the container.'
+        default: 'local/container-build'
     tag:
         description: 'The tag to apply to the container.'
         default: 'latest'
@@ -39,34 +30,23 @@ inputs:
         default: 'linux/amd64'
 
 outputs:
-    registry:
-        value: ${{ steps.login-ecr.outputs.registry }}
-        description: 'The ECR registry the image has been pushed to.'
+    repository:
+        value: ${{ inputs.repository }}
+        description: 'The repository.'
+    tag:
+        value: ${{ inputs.tag }}
+        description: 'The tag.'
+    image:
+        value: ${{ inputs.repository }}:${{ inputs.tag }}
+        description: 'The full image with tag.'
 
 runs:
     using: 'composite'
     steps:
-        -   name: Set up [awscli, qemu-user-static]
+        -   name: Set up [qemu-user-static]
             uses: awalsh128/cache-apt-pkgs-action@latest
             with:
-                packages: awscli qemu-user-static
-
-        -   name: Configure AWS Credentials
-            uses: aws-actions/configure-aws-credentials@v4
-            with:
-                aws-region: ${{ inputs.aws-region }}
-                role-to-assume: ${{ inputs.aws-role-arn }}
-                role-session-name: ${{ inputs.aws-session-name }}
-
-        -   name: Login to Amazon ECR (1/2)
-            id: login-ecr
-            uses: aws-actions/amazon-ecr-login@v2
-            with:
-                mask-password: 'false'
-        -   name: Login to Amazon ECR (2/2)
-            shell: bash
-            run: |
-                aws ecr get-login-password --region eu-west-1 | buildah login -u AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+                packages: qemu-user-static
 
         -   name: Build and push
             shell: bash
