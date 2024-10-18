@@ -1,8 +1,10 @@
 # GitHub Actions workflow templates
+
 Welcome! This repository contains a collection of GitHub Actions workflows that can be used by anyone in their
 repositories.
 
 ## Workflows
+
 We have made a GitHub Actions workflows available that we use a lot throughout our repositories. You can find the
 following workflows:
 
@@ -14,6 +16,7 @@ following workflows:
 * [ghcr-build-push](./ghcr-build-push): Build a container and push it the GitHub container registry (ghcr.io).
 
 ## Usage
+
 See inside each workflow directory for more information on how to use the workflow. Each workflow has a `README.md`.
 You can use each workflow with `uses: xip-online-applications/gha-workflow-templates/{WORKFLOW}@{VERSION or main}`.
 See the following example:

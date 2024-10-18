@@ -1,7 +1,9 @@
 # xip-online-applications/gha-workflow-templates/aws-ecr-build-push
+
 Build and push a Docker image to [AWS ECR](https://aws.amazon.com/ecr/). This workflow use the GitHub OIDC connector.
 
 ## Inputs
+
 * `aws-role-arn`: The AWS role to assume;
 * `aws-region`: The AWS region to assume the role in;
 * `aws-session-name`: The AWS session name, defaults to `xip-gha-aws-ecr-build-push`;
@@ -14,4 +16,5 @@ Build and push a Docker image to [AWS ECR](https://aws.amazon.com/ecr/). This wo
 * `platforms`: The [platforms](https://docs.docker.com/build/building/multi-platform/) to build for, defaults to `linux/amd64`.
 
 ## Outputs
+
 * `registry`: The ECR registry URL.
