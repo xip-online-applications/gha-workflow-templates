@@ -56,7 +56,7 @@ runs:
             with:
                 version: ${{ inputs.helm-version }}
         -   name: Install jq
-            uses: awalsh128/cache-apt-pkgs-action@latest
+            uses: awalsh128/cache-apt-pkgs-action@master
             with:
                 packages: jq
                 version: 1.0
