@@ -15,7 +15,7 @@ runs:
     using: 'composite'
     steps:
         -   name: Install packages
-            uses: awalsh128/cache-apt-pkgs-action@v1.4.3
+            uses: awalsh128/cache-apt-pkgs-action@master
             with:
                 packages: git-crypt
                 version: 1.0
