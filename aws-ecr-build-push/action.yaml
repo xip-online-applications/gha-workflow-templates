@@ -63,6 +63,15 @@ runs:
             id: login-ecr
             uses: aws-actions/amazon-ecr-login@v2
 
+        -   name: Login to Amazon ECR with Docker
+            uses: docker/login-action@v3
+            with:
+                registry: ${{ steps.login-ecr.outputs.registry }}
+
+        -   name: Builder
+            shell: bash
+            run: |
+                docker buildx create --name ${{ inputs.repository }} --use
         -   name: Build and push
             uses: docker/build-push-action@v6
             with:
@@ -74,5 +83,6 @@ runs:
                 build-args: |
                     ${{ inputs.build-args }}
                 platforms: ${{ inputs.platforms }}
-                cache-from: type=gha
-                cache-to: type=gha,mode=max
+                builder: ${{ inputs.repository }}
+                cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:cache
+                cache-to: type=registry,mode=max,image-manifest=true,oci-mediatypes=true,ref=${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:cache
