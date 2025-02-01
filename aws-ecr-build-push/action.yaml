@@ -46,6 +46,11 @@ outputs:
 runs:
     using: 'composite'
     steps:
+        -   name: Outputs
+            id: vars
+            run: |
+                echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
         -   name: Set up QEMU
             uses: docker/setup-qemu-action@v3
 
@@ -71,7 +76,7 @@ runs:
         -   name: Builder
             shell: bash
             run: |
-                docker buildx create --name ${{ inputs.repository }} --use
+                docker buildx create --name b${{ steps.vars.outputs.sha_short }} --use
         -   name: Build and push
             uses: docker/build-push-action@v6
             with:
@@ -83,6 +88,6 @@ runs:
                 build-args: |
                     ${{ inputs.build-args }}
                 platforms: ${{ inputs.platforms }}
-                builder: ${{ inputs.repository }}
+                builder: b${{ steps.vars.outputs.sha_short }}
                 cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:cache
                 cache-to: type=registry,mode=max,image-manifest=true,oci-mediatypes=true,ref=${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:cache
