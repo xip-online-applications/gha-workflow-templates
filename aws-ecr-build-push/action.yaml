@@ -48,6 +48,7 @@ runs:
     steps:
         -   name: Outputs
             id: vars
+            shell: bash
             run: |
                 echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
