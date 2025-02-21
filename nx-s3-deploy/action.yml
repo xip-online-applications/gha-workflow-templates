@@ -80,8 +80,7 @@ runs:
 
         -   name: Deploy ${{ inputs.nx-app }} ${{ inputs.nx-environment }} to S3
             shell: bash
-            working-directory: '${{ inputs.chroot }}'
-            run: 'aws s3 sync dist/${{ inputs.nx-app }}/${{ inputs.nx-environment }} s3://${{ inputs.s3-bucket }}${{ inputs.s3-path }} --delete'
+            run: 'aws s3 sync dist/apps/${{ inputs.nx-app }}/ s3://${{ inputs.s3-bucket }}${{ inputs.s3-path }} --delete'
 
         -   name: Invalidate CloudFront cache
             shell: bash
