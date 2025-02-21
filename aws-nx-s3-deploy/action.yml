@@ -37,6 +37,7 @@ inputs:
         required: true
     s3-path:
         description: 'The S3 path to deploy to.'
+        default: '/'
     cloudfront-distribution-id:
         description: 'The CloudFront distribution ID to invalidate.'
         required: true
@@ -79,7 +80,7 @@ runs:
             working-directory: '${{ inputs.chroot }}'
             run: 'npx nx run ${{ inputs.nx-app }}:build:${{ inputs.nx-environment }}'
 
-        -   name: Deploy to S3
+        -   name: ${{ inputs.nx-app }} ${{ inputs.nx-environment }} to S3
             shell: bash
             working-directory: '${{ inputs.chroot }}'
-            run: 'aws s3 sync dist/${{ inputs.nx-app }}/${{ inputs.nx-environment }}/ s3://${{ inputs.s3-bucket }}/${{ inputs.s3-path }} --delete'
+            run: 'aws s3 sync dist/${{ inputs.nx-app }}/${{ inputs.nx-environment }} s3://${{ inputs.s3-bucket }}${{ inputs.s3-path }} --delete'
