@@ -60,7 +60,7 @@ runs:
                 cache-name: cache-node
             with:
                 path: ./node_modules
-                key: ${{ runner.os }}-node-${{ env.cache-name }}-${{ hashFiles('${{ inputs.chroot }}/project.json') }}
+                key: ${{ runner.os }}-node-${{ env.cache-name }}-${{ hashFiles('./package-lock.json') }}
                 restore-keys: ${{ runner.os }}-node-${{ env.cache-name }}-
         -   name: Cache ${{ inputs.nx-app }} ${{ inputs.nx-environment }} (2/2)
             shell: bash
