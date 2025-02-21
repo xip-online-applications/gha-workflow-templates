@@ -65,6 +65,7 @@ runs:
         -   name: Cache ${{ inputs.nx-app }} ${{ inputs.nx-environment }} (2/2)
             shell: bash
             if: ${{ steps.cache-node.outputs.cache-hit != 'true' }}
+            continue-on-error: true
             run: npm list
 
         -   name: Install packages
