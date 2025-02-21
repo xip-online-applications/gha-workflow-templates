@@ -55,16 +55,16 @@ runs:
 
         -   name: Cache ${{ inputs.nx-app }} ${{ inputs.nx-environment }} (1/2)
             uses: actions/cache@v4
-            id: cache-node-${{ inputs.nx-app }}-${{ inputs.nx-environment }}
+            id: cache-node
             env:
-                cache-name: cache-node-${{ inputs.nx-app }}-${{ inputs.nx-environment }}
+                cache-name: cache-node
             with:
                 path: ${{ inputs.chroot }}/NX/node_modules
                 key: ${{ runner.os }}-node-${{ env.cache-name }}-${{ hashFiles('${{ inputs.chroot }}/project.json') }}
                 restore-keys: ${{ runner.os }}-node-${{ env.cache-name }}-
         -   name: Cache ${{ inputs.nx-app }} ${{ inputs.nx-environment }} (2/2)
             shell: bash
-            if: steps.cache-node-${{ inputs.nx-app }}-${{ inputs.nx-environment }}.outputs.cache-hit != 'true'
+            if: ${{ steps.cache-node.outputs.cache-hit != 'true' }}
             run: npm list
 
         -   name: Install packages
