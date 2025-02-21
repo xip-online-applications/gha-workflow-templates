@@ -3,9 +3,6 @@ description: 'Deploy an AWS NX project to S3.'
 author: 'XIP Online Services'
 
 inputs:
-    stage:
-        description: 'The stage to deploy.'
-        required: true
     aws-role-arn:
         description: 'The AWS role to assume and perform AWS actions with.'
         required: true
@@ -80,7 +77,7 @@ runs:
             working-directory: '${{ inputs.chroot }}'
             run: 'npx nx run ${{ inputs.nx-app }}:build:${{ inputs.nx-environment }}'
 
-        -   name: ${{ inputs.nx-app }} ${{ inputs.nx-environment }} to S3
+        -   name: Deploy ${{ inputs.nx-app }} ${{ inputs.nx-environment }} to S3
             shell: bash
             working-directory: '${{ inputs.chroot }}'
             run: 'aws s3 sync dist/${{ inputs.nx-app }}/${{ inputs.nx-environment }} s3://${{ inputs.s3-bucket }}${{ inputs.s3-path }} --delete'
