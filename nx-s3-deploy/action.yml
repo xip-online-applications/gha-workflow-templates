@@ -1,5 +1,5 @@
-name: 'AWS NX to S3 deploy'
-description: 'Deploy an AWS NX project to S3.'
+name: 'NX to S3 deploy'
+description: 'Deploy an NX project to S3.'
 author: 'XIP Online Services'
 
 inputs:
