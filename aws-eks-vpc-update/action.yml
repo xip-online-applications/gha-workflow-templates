@@ -1,0 +1,33 @@
+name: 'EKS VPC endpoint update'
+description: 'Updated the EKS VPC endpoint to include the current IP address of the runner.'
+inputs:
+  stage:
+    description: 'The stage to plan for'
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Outputs
+      id: vars
+      shell: bash
+      run: |
+        echo "ipv4=$(curl -s https://checkip.amazonaws.com)" >> $GITHUB_OUTPUT
+
+    - name: EKS test
+      if: ${{ inputs.stage == 'test' || inputs.stage == 'acc' }}
+      shell: bash
+      run: |
+        aws configure set region eu-west-1 --profile EKSUPDATECLUSTERCONFIGTEST
+        aws configure set aws_access_key_id ${{ secrets.EKSUPDATECLUSTERCONFIGTESTKEY }} --profile EKSUPDATECLUSTERCONFIGTEST
+        aws configure set aws_secret_access_key ${{ secrets.EKSUPDATECLUSTERCONFIGTESTSECRET }} --profile EKSUPDATECLUSTERCONFIGTEST
+        aws eks update-cluster-config --profile EKSUPDATECLUSTERCONFIGTEST --region eu-west-1 --name tm-stage-EksCluster --resources-vpc-config endpointPublicAccess=true,publicAccessCidrs="34.239.17.55/32,52.20.253.7/32,35.170.141.30/32,107.23.56.82/32,34.238.108.61/32,54.88.27.219/32,35.153.154.87/32,34.235.84.42/32,84.247.14.226/32,${{ steps.vars.outputs.ipv4 }}/32",endpointPrivateAccess=true
+
+    - name: EKS prod
+      if: ${{ inputs.stage == 'stag' || inputs.stage == 'prod' }}
+      shell: bash
+      run: |
+        aws configure set region eu-west-1 --profile EKSUPDATECLUSTERCONFIGPROD
+        aws configure set aws_access_key_id ${{ secrets.EKSUPDATECLUSTERCONFIGPRODKEY }} --profile EKSUPDATECLUSTERCONFIGPROD
+        aws configure set aws_secret_access_key ${{ secrets.EKSUPDATECLUSTERCONFIGPRODSECRET }} --profile EKSUPDATECLUSTERCONFIGPROD
+        aws eks update-cluster-config --profile EKSUPDATECLUSTERCONFIGPROD --region eu-west-1 --name tm-stage-EksCluster --resources-vpc-config endpointPublicAccess=true,publicAccessCidrs="34.239.17.55/32,52.20.253.7/32,35.170.141.30/32,107.23.56.82/32,34.238.108.61/32,54.88.27.219/32,35.153.154.87/32,34.235.84.42/32,84.247.14.226/32,${{ steps.vars.outputs.ipv4 }}/32",endpointPrivateAccess=true
