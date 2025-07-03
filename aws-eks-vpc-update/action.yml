@@ -39,7 +39,7 @@ runs:
                 aws configure set region eu-west-1 --profile EKSUPDATECLUSTERCONFIGTEST
                 aws configure set aws_access_key_id ${{ inputs.EKSUPDATECLUSTERCONFIGTESTKEY }} --profile EKSUPDATECLUSTERCONFIGTEST
                 aws configure set aws_secret_access_key ${{ inputs.EKSUPDATECLUSTERCONFIGTESTSECRET }} --profile EKSUPDATECLUSTERCONFIGTEST
-                aws eks update-cluster-config --profile EKSUPDATECLUSTERCONFIGTEST --region eu-west-1 --name tm-stage-EksCluster --resources-vpc-config endpointPublicAccess=true,publicAccessCidrs="34.239.17.55/32,52.20.253.7/32,35.170.141.30/32,107.23.56.82/32,34.238.108.61/32,54.88.27.219/32,35.153.154.87/32,34.235.84.42/32,84.247.14.226/32,${{ steps.current-ip.outputs.ipv4 }}/32",endpointPrivateAccess=true
+                aws eks update-cluster-config --profile EKSUPDATECLUSTERCONFIGTEST --region eu-west-1 --name tm-stage-EksCluster --resources-vpc-config endpointPublicAccess=true,publicAccessCidrs="54.75.244.102/32,84.247.14.226/32,${{ steps.current-ip.outputs.ipv4 }}/32",endpointPrivateAccess=true
 
         -   name: EKS prod
             if: ${{ inputs.stage == 'prod' }}
@@ -48,4 +48,4 @@ runs:
                 aws configure set region eu-west-1 --profile EKSUPDATECLUSTERCONFIGPROD
                 aws configure set aws_access_key_id ${{ inputs.EKSUPDATECLUSTERCONFIGPRODKEY }} --profile EKSUPDATECLUSTERCONFIGPROD
                 aws configure set aws_secret_access_key ${{ inputs.EKSUPDATECLUSTERCONFIGPRODSECRET }} --profile EKSUPDATECLUSTERCONFIGPROD
-                aws eks update-cluster-config --profile EKSUPDATECLUSTERCONFIGPROD --region eu-west-1 --name tm-stage-EksCluster --resources-vpc-config endpointPublicAccess=true,publicAccessCidrs="34.239.17.55/32,52.20.253.7/32,35.170.141.30/32,107.23.56.82/32,34.238.108.61/32,54.88.27.219/32,35.153.154.87/32,34.235.84.42/32,84.247.14.226/32,${{ steps.current-ip.outputs.ipv4 }}/32",endpointPrivateAccess=true
+                aws eks update-cluster-config --profile EKSUPDATECLUSTERCONFIGPROD --region eu-west-1 --name tm-stage-EksCluster --resources-vpc-config endpointPublicAccess=true,publicAccessCidrs="54.75.244.102/32,84.247.14.226/32,${{ steps.current-ip.outputs.ipv4 }}/32",endpointPrivateAccess=true
