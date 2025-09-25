@@ -35,17 +35,20 @@ runs:
         -   name: EKS test
             if: ${{ inputs.stage == 'test' }}
             shell: bash
+            env:
+                IPV4: ${{ steps.current-ip.outputs.ipv4 }}
             run: |
                 aws configure set region eu-west-1 --profile EKSUPDATECLUSTERCONFIGTEST
                 aws configure set aws_access_key_id ${{ inputs.EKSUPDATECLUSTERCONFIGTESTKEY }} --profile EKSUPDATECLUSTERCONFIGTEST
                 aws configure set aws_secret_access_key ${{ inputs.EKSUPDATECLUSTERCONFIGTESTSECRET }} --profile EKSUPDATECLUSTERCONFIGTEST
-                aws eks update-cluster-config --profile EKSUPDATECLUSTERCONFIGTEST --region eu-west-1 --name tm-stage-EksCluster --resources-vpc-config endpointPublicAccess=true,publicAccessCidrs="54.75.244.102/32,84.247.14.226/32,212.78.207.64/28,${{ steps.current-ip.outputs.ipv4 }}/32",endpointPrivateAccess=true
-
+                aws eks update-cluster-config --profile EKSUPDATECLUSTERCONFIGTEST --region eu-west-1 --name tm-stage-EksCluster --resources-vpc-config endpointPublicAccess=true,publicAccessCidrs="54.75.244.102/32,84.247.14.226/32,212.78.207.64/28,${IPV4}/32",endpointPrivateAccess=true
         -   name: EKS prod
             if: ${{ inputs.stage == 'prod' }}
             shell: bash
+            env:
+                IPV4: ${{ steps.current-ip.outputs.ipv4 }}
             run: |
                 aws configure set region eu-west-1 --profile EKSUPDATECLUSTERCONFIGPROD
                 aws configure set aws_access_key_id ${{ inputs.EKSUPDATECLUSTERCONFIGPRODKEY }} --profile EKSUPDATECLUSTERCONFIGPROD
                 aws configure set aws_secret_access_key ${{ inputs.EKSUPDATECLUSTERCONFIGPRODSECRET }} --profile EKSUPDATECLUSTERCONFIGPROD
-                aws eks update-cluster-config --profile EKSUPDATECLUSTERCONFIGPROD --region eu-west-1 --name tm-stage-EksCluster --resources-vpc-config endpointPublicAccess=true,publicAccessCidrs="54.75.244.102/32,84.247.14.226/32,212.78.207.64/28,${{ steps.current-ip.outputs.ipv4 }}/32",endpointPrivateAccess=true
+                aws eks update-cluster-config --profile EKSUPDATECLUSTERCONFIGPROD --region eu-west-1 --name tm-stage-EksCluster --resources-vpc-config endpointPublicAccess=true,publicAccessCidrs="54.75.244.102/32,84.247.14.226/32,212.78.207.64/28,${IPV4}/32",endpointPrivateAccess=true
