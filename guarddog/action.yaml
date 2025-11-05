@@ -42,7 +42,7 @@ runs:
             shell: bash
             working-directory: ${{ inputs.dir }}
             run: |
-                guarddog npm scan frontend/ --output-format json > /tmp/guarddog-results.json
+                guarddog npm scan ./ --output-format json > /tmp/guarddog-results.json
                 jq -r '("Heuristic\t#"), (.results | to_entries[] | "\(.key)\t\(.value | length)")' /tmp/guarddog-results.json
 
                 # Check if any heuristic has issues (count > 0)
