@@ -45,10 +45,9 @@ runs:
                 guarddog npm scan ./ --output-format json > /tmp/guarddog-results.json
                 jq -r '("Heuristic\t#"), (.results | to_entries[] | "\(.key)\t\(.value | length)")' /tmp/guarddog-results.json
 
-                # Check if any heuristic has issues (count > 0)
                 ISSUES=$(jq '.results | to_entries[] | .value | length' /tmp/guarddog-results.json | awk '{s+=$1} END {print s}')
 
                 if [ "$ISSUES" -gt 0 ]; then
-                    echo "GuardDog found $ISSUES issue(s)!"
+                    echo "GuardDog found $ISSUES issue(s)"
                     exit 1
                 fi
