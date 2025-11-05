@@ -48,6 +48,6 @@ runs:
                 ISSUES=$(jq '.results | to_entries[] | .value | length' /tmp/guarddog-results.json | awk '{s+=$1} END {print s}')
 
                 if [ "$ISSUES" -gt 0 ]; then
-                    echo "GuardDog found $ISSUES issue(s)"
+                    guarddog npm scan ./
                     exit 1
                 fi
