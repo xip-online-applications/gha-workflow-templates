@@ -1,31 +1,31 @@
-name: 'Git-crypt unlock'
-description: 'Unlock a git-crypt repository.'
-author: 'XIP Online Applications'
+name: "Git-crypt unlock"
+description: "Unlock a git-crypt repository."
+author: "XIP Online Applications"
 
 branding:
-    icon: 'unlock'
-    color: 'blue'
+  icon: "unlock"
+  color: "blue"
 
 inputs:
-    git-crypt-key:
-        description: 'The base64 encoded git-crypt decryption key'
-        required: true
+  git-crypt-key:
+    description: "The base64 encoded git-crypt decryption key"
+    required: true
 
 runs:
-    using: 'composite'
-    steps:
-        -   name: Install packages
-            uses: awalsh128/cache-apt-pkgs-action@master
-            with:
-                packages: git-crypt
-                version: 1.0
+  using: "composite"
+  steps:
+    - name: Install packages
+      uses: awalsh128/cache-apt-pkgs-action@master
+      with:
+        packages: git-crypt
+        version: 1.0
 
-        -   name: Decrypt with git-crypt
-            shell: bash
-            run: |
-                KEY="${{ inputs.git-crypt-key }}"
-                if [ ! -z "$KEY" ]; then
-                    echo $KEY | base64 -d > /tmp/git-crypt.key
-                    git-crypt unlock /tmp/git-crypt.key
-                    rm /tmp/git-crypt.key
-                fi
+    - name: Decrypt with git-crypt
+      shell: bash
+      run: |
+        KEY="${{ inputs.git-crypt-key }}"
+        if [ ! -z "$KEY" ]; then
+            echo $KEY | base64 -d > /tmp/git-crypt.key
+            git-crypt unlock /tmp/git-crypt.key
+            rm /tmp/git-crypt.key
+        fi

@@ -1,45 +1,45 @@
-name: 'Lint helm chart'
-description: 'Lint a local helm chart.'
-author: 'XIP Online Applications'
+name: "Lint helm chart"
+description: "Lint a local helm chart."
+author: "XIP Online Applications"
 
 branding:
-    icon: 'unlock'
-    color: 'blue'
+  icon: "unlock"
+  color: "blue"
 
 inputs:
-    command:
-        description: 'The command to trigger the deployment. You can use two replacements: {0} = environment, {1} = tag.'
-        required: true
-    environment:
-        description: 'The environment to build the container for.'
-        default: 'dev'
-    tag:
-        description: 'The tag to use during the deployment.'
-        default: 'latest'
-    helm-version:
-        description: 'The helm version to install.'
-        default: 'latest'
-    github-token:
-        description: 'The GitHub token to use for fetching the helm installation.'
-        required: false
-    git-crypt-key:
-        description: 'The base64 encoded git-crypt decryption key'
-        required: false
+  command:
+    description: "The command to trigger the deployment. You can use two replacements: {0} = environment, {1} = tag."
+    required: true
+  environment:
+    description: "The environment to build the container for."
+    default: "dev"
+  tag:
+    description: "The tag to use during the deployment."
+    default: "latest"
+  helm-version:
+    description: "The helm version to install."
+    default: "latest"
+  github-token:
+    description: "The GitHub token to use for fetching the helm installation."
+    required: false
+  git-crypt-key:
+    description: "The base64 encoded git-crypt decryption key"
+    required: false
 
 runs:
-    using: 'composite'
-    steps:
-        -   name: Install helm
-            uses: azure/setup-helm@v4
-            with:
-                version: ${{ inputs.helm-version }}
+  using: "composite"
+  steps:
+    - name: Install helm
+      uses: azure/setup-helm@v4
+      with:
+        version: ${{ inputs.helm-version }}
 
-        -   name: Git-crypt unlock
-            if: ${{ inputs.git-crypt-key != '' }}
-            uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
-            with:
-                git-crypt-key: ${{ inputs.git-crypt-key }}
+    - name: Git-crypt unlock
+      if: ${{ inputs.git-crypt-key != '' }}
+      uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
+      with:
+        git-crypt-key: ${{ inputs.git-crypt-key }}
 
-        -   name: Lint helm chart
-            shell: bash
-            run: ${{ format(inputs.command, inputs.environment, inputs.tag) }}
+    - name: Lint helm chart
+      shell: bash
+      run: ${{ format(inputs.command, inputs.environment, inputs.tag) }}

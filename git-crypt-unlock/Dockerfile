@@ -1,8 +1,8 @@
 FROM debian:stable
 
 RUN apt-get update  \
-    && apt-get install -y git-crypt \
-    && apt-get clean
+  && apt-get install -y git-crypt \
+  && apt-get clean
 
 RUN git config --system --add safe.directory '*'
 
