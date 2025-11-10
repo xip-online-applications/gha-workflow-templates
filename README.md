@@ -22,19 +22,19 @@ You can use each workflow with `uses: xip-online-applications/gha-workflow-templ
 See the following example:
 
 ```yaml
-name: 'Test git-crypt-unlock'
+name: "Test git-crypt-unlock"
 on:
-    push:
+  push:
 jobs:
-    job:
-        name: Test git-crypt-unlock
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+  job:
+    name: Test git-crypt-unlock
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: Git-crypt unlock
-              uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
-              with:
-                git-crypt-key: 'xxx'
+      - name: Git-crypt unlock
+        uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
+        with:
+          git-crypt-key: "xxx"
 ```

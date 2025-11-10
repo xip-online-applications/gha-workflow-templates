@@ -1,85 +1,85 @@
-name: 'ghcr.io: build & push'
-description: 'Build a container and push it the GitHub container registry (ghcr.io).'
-author: 'XIP Online Applications'
+name: "ghcr.io: build & push"
+description: "Build a container and push it the GitHub container registry (ghcr.io)."
+author: "XIP Online Applications"
 
 branding:
-    icon: 'code'
-    color: 'blue'
+  icon: "code"
+  color: "blue"
 
 inputs:
-    username:
-        description: 'The username to use to push the image.'
-        default: ${{ github.actor }}
-    password:
-        description: 'The password to use to push the image, usually a GitHub token.'
-        default: ${{ github.token }}
-    repository:
-        description: 'The repository name to push the image to.'
-        default: ${{ github.repository }}
-    tag:
-        description: 'The tag to apply to the container.'
-        default: 'latest'
-    context:
-        description: 'The context to build the container from.'
-        default: '.'
-    dockerfile:
-        description: 'The Dockerfile to use in the build.'
-        default: 'Dockerfile'
-    build-args:
-        description: 'List of build-time variables.'
-        default: ''
-    target:
-        description: 'The target to use in the build.'
-        required: false
-    platforms:
-        description: 'The comma separated list of platforms to build the container for.'
-        default: 'linux/amd64'
+  username:
+    description: "The username to use to push the image."
+    default: ${{ github.actor }}
+  password:
+    description: "The password to use to push the image, usually a GitHub token."
+    default: ${{ github.token }}
+  repository:
+    description: "The repository name to push the image to."
+    default: ${{ github.repository }}
+  tag:
+    description: "The tag to apply to the container."
+    default: "latest"
+  context:
+    description: "The context to build the container from."
+    default: "."
+  dockerfile:
+    description: "The Dockerfile to use in the build."
+    default: "Dockerfile"
+  build-args:
+    description: "List of build-time variables."
+    default: ""
+  target:
+    description: "The target to use in the build."
+    required: false
+  platforms:
+    description: "The comma separated list of platforms to build the container for."
+    default: "linux/amd64"
 
 outputs:
-    registry:
-        value: ${{ steps.login.outputs.registry }}/${{ inputs.repository }}
-        description: 'The ghcr.io registry the image has been pushed to.'
-    image:
-        value: ${{ steps.login.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}
-        description: 'The full image name with registry and tag.'
+  registry:
+    value: ${{ steps.login.outputs.registry }}/${{ inputs.repository }}
+    description: "The ghcr.io registry the image has been pushed to."
+  image:
+    value: ${{ steps.login.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}
+    description: "The full image name with registry and tag."
 
 runs:
-    using: 'composite'
-    steps:
-        -   name: Outputs
-            id: vars
-            shell: bash
-            run: |
-                echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+  using: "composite"
+  steps:
+    - name: Outputs
+      id: vars
+      shell: bash
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-        -   name: Set up QEMU
-            uses: docker/setup-qemu-action@v3
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
 
-        -   name: Set up Docker Buildx
-            uses: docker/setup-buildx-action@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-        -   id: login
-            name: Login to ghcr.io
-            uses: xip-online-applications/gha-workflow-templates/ghcr-login@main
-            with:
-                username: ${{ inputs.username }}
-                password: ${{ inputs.password }}
+    - id: login
+      name: Login to ghcr.io
+      uses: xip-online-applications/gha-workflow-templates/ghcr-login@main
+      with:
+        username: ${{ inputs.username }}
+        password: ${{ inputs.password }}
 
-        -   name: Builder
-            shell: bash
-            run: |
-                docker buildx create --name b${{ steps.vars.outputs.sha_short }} --use
-        -   name: Build and push
-            uses: docker/build-push-action@v6
-            with:
-                context: ${{ inputs.context }}
-                file: ${{ inputs.dockerfile }}
-                target: ${{ inputs.target }}
-                push: true
-                tags: ${{ steps.login.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}
-                build-args: |
-                    ${{ inputs.build-args }}
-                platforms: ${{ inputs.platforms }}
-                builder: b${{ steps.vars.outputs.sha_short }}
-                cache-from: type=registry,ref=${{ steps.login.outputs.registry }}/${{ inputs.repository }}:cache
-                cache-to: type=registry,ref=${{ steps.login.outputs.registry }}/${{ inputs.repository }}:cache,mode=max
+    - name: Builder
+      shell: bash
+      run: |
+        docker buildx create --name b${{ steps.vars.outputs.sha_short }} --use
+    - name: Build and push
+      uses: docker/build-push-action@v6
+      with:
+        context: ${{ inputs.context }}
+        file: ${{ inputs.dockerfile }}
+        target: ${{ inputs.target }}
+        push: true
+        tags: ${{ steps.login.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}
+        build-args: |
+          ${{ inputs.build-args }}
+        platforms: ${{ inputs.platforms }}
+        builder: b${{ steps.vars.outputs.sha_short }}
+        cache-from: type=registry,ref=${{ steps.login.outputs.registry }}/${{ inputs.repository }}:cache
+        cache-to: type=registry,ref=${{ steps.login.outputs.registry }}/${{ inputs.repository }}:cache,mode=max
