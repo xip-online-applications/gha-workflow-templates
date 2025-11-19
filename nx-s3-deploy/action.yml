@@ -1,87 +1,91 @@
-name: 'NX to S3 deploy'
-description: 'Deploy an NX project to S3.'
-author: 'XIP Online Services'
+name: "NX to S3 deploy"
+description: "Deploy an NX project to S3."
+author: "XIP Online Services"
 
 inputs:
     aws-role-arn:
-        description: 'The AWS role to assume and perform AWS actions with.'
+        description: "The AWS role to assume and perform AWS actions with."
         required: true
     aws-region:
-        description: 'The AWS region to push the image to.'
+        description: "The AWS region to push the image to."
         required: true
     aws-session-name:
-        description: 'The AWS session name to use when assuming the AWS role.'
-        default: 'xip-gha-aws-nx-s3-deploy'
+        description: "The AWS session name to use when assuming the AWS role."
+        default: "xip-gha-aws-nx-s3-deploy"
     chroot:
-        description: 'The chroot to use for the deployment.'
-        default: '.'
+        description: "The chroot to use for the deployment."
+        default: "."
     package-install-command:
-        description: 'The command to run to install the packages.'
-        default: 'npm ci'
+        description: "The command to run to install the packages."
+        default: "npm ci"
     nx-app:
-        description: 'The nx app to deploy.'
+        description: "The nx app to deploy."
         required: true
-        default: 'frontend'
+        default: "frontend"
     nx-environment:
-        description: 'The nx environment to deploy.'
+        description: "The nx environment to deploy."
         required: true
-        default: 'development'
+        default: "development"
     node-version:
-        description: 'The node version to setup'
-        default: 'lts/*'
+        description: "The node version to setup"
+        default: "lts/*"
     s3-bucket:
-        description: 'The S3 bucket to deploy to.'
+        description: "The S3 bucket to deploy to."
         required: true
     s3-path:
-        description: 'The S3 path to deploy to.'
-        default: '/'
+        description: "The S3 path to deploy to."
+        default: "/"
     cloudfront-distribution-id:
-        description: 'The CloudFront distribution ID to invalidate.'
+        description: "The CloudFront distribution ID to invalidate."
         required: true
 
 runs:
-    using: 'composite'
+    using: "composite"
     steps:
-        -   uses: actions/setup-node@v4
-            with:
-                node-version: '${{ inputs.node-version }}'
+        - uses: actions/setup-node@v4
+          with:
+              node-version: "${{ inputs.node-version }}"
 
-        -   name: Configure AWS Credentials
-            uses: aws-actions/configure-aws-credentials@v4
-            with:
-                aws-region: '${{ inputs.aws-region }}'
-                role-to-assume: '${{ inputs.aws-role-arn }}'
-                role-session-name: '${{ inputs.aws-session-name }}'
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+              aws-region: "${{ inputs.aws-region }}"
+              role-to-assume: "${{ inputs.aws-role-arn }}"
+              role-session-name: "${{ inputs.aws-session-name }}"
 
-        -   name: Cache ${{ inputs.nx-app }} ${{ inputs.nx-environment }} (1/2)
-            uses: actions/cache@v4
-            id: cache-node
-            env:
-                cache-name: cache-node
-            with:
-                path: ./node_modules
-                key: ${{ runner.os }}-node-${{ env.cache-name }}-${{ hashFiles('./package-lock.json') }}
-                restore-keys: ${{ runner.os }}-node-${{ env.cache-name }}-
-        -   name: Cache ${{ inputs.nx-app }} ${{ inputs.nx-environment }} (2/2)
-            shell: bash
-            if: ${{ steps.cache-node.outputs.cache-hit != 'true' }}
-            continue-on-error: true
-            run: npm list
+        - name: Cache ${{ inputs.nx-app }} ${{ inputs.nx-environment }} (1/2)
+          uses: actions/cache@v4
+          id: cache-node
+          env:
+              cache-name: cache-node
+          with:
+              path: ./node_modules
+              key: ${{ runner.os }}-node-${{ env.cache-name }}-${{ hashFiles('./package-lock.json') }}
+              restore-keys: ${{ runner.os }}-node-${{ env.cache-name }}-
+        - name: Cache ${{ inputs.nx-app }} ${{ inputs.nx-environment }} (2/2)
+          shell: bash
+          if: ${{ steps.cache-node.outputs.cache-hit != 'true' }}
+          continue-on-error: true
+          run: |
+              npm list
 
-        -   name: Install packages
-            shell: bash
-            working-directory: '${{ inputs.chroot }}'
-            run: '${{ inputs.package-install-command }}'
+        - name: Install packages
+          shell: bash
+          working-directory: "${{ inputs.chroot }}"
+          run: |
+              ${{ inputs.package-install-command }}
 
-        -   name: Build ${{ inputs.nx-app }} ${{ inputs.nx-environment }}
-            shell: bash
-            working-directory: '${{ inputs.chroot }}'
-            run: 'npx nx run ${{ inputs.nx-app }}:build:${{ inputs.nx-environment }}'
+        - name: Build ${{ inputs.nx-app }} ${{ inputs.nx-environment }}
+          shell: bash
+          working-directory: "${{ inputs.chroot }}"
+          run: |
+              npx nx run ${{ inputs.nx-app }}:build:${{ inputs.nx-environment }}
 
-        -   name: Deploy ${{ inputs.nx-app }} ${{ inputs.nx-environment }} to S3
-            shell: bash
-            run: 'aws s3 sync dist/apps/${{ inputs.nx-app }}/browser/ s3://${{ inputs.s3-bucket }}${{ inputs.s3-path }} --delete'
-
-        -   name: Invalidate CloudFront cache
-            shell: bash
-            run: 'aws cloudfront create-invalidation --distribution-id ${{ inputs.cloudfront-distribution-id }} --paths "${{ inputs.s3-path }}*"'
+        - name: Deploy ${{ inputs.nx-app }} ${{ inputs.nx-environment }} to S3
+          shell: bash
+          run: |
+              aws s3 sync dist/apps/${{ inputs.nx-app }}/browser/ s3://${{ inputs.s3-bucket }}${{ inputs.s3-path }} --delete
+        - name: Invalidate CloudFront cache
+          shell: bash
+          run: |
+              aws cloudfront create-invalidation --distribution-id ${{ inputs.cloudfront-distribution-id }} --paths "${{ inputs.s3-path }}*

@@ -1,7 +1,3 @@
-; This file is for unifying the coding style for different editors and IDEs
-; See editorconfig.org
-
-; top-most EditorConfig file
 root = true
 
 [*]
@@ -14,7 +10,7 @@ insert_final_newline = true
 
 ; make YAML explicit so it's never overwritten by [*]
 
-[{*.yml,*.yaml}]
+[{*.}yml,yaml]
 indent_style = space
 indent_size = 4
 

@@ -1,65 +1,68 @@
-name: 'AWS: Serverless deploy'
-description: 'Deploy a Serverless application on AWS.'
-author: 'XIP Online Applications'
+name: "AWS: Serverless deploy"
+description: "Deploy a Serverless application on AWS."
+author: "XIP Online Applications"
 
 inputs:
     stage:
-        description: 'The stage to deploy.'
+        description: "The stage to deploy."
         required: true
     aws-role-arn:
-        description: 'The AWS role to assume and perform AWS actions with.'
+        description: "The AWS role to assume and perform AWS actions with."
         required: true
     aws-region:
-        description: 'The AWS region to push the image to.'
+        description: "The AWS region to push the image to."
         required: true
     aws-session-name:
-        description: 'The AWS session name to use when assuming the AWS role.'
-        default: 'xip-gha-aws-serverless-deploy'
+        description: "The AWS session name to use when assuming the AWS role."
+        default: "xip-gha-aws-serverless-deploy"
     chroot:
-        description: 'The chroot to use for the deployment.'
-        default: '.'
+        description: "The chroot to use for the deployment."
+        default: "."
     package-install-command:
-        description: 'The command to run to install the packages.'
-        default: 'npm ci'
+        description: "The command to run to install the packages."
+        default: "npm ci"
     npm-command:
-        description: 'The command to run to do the deployment. You can use one replacement: {0} = stage, {1} = `npm run serverless -- `.'
-        default: 'npm run serverless -- '
+        description: "The command to run to do the deployment. You can use one replacement: {0} = stage, {1} = `npm run serverless -- `."
+        default: "npm run serverless -- "
     deploy-command:
-        description: 'The command to run to do the deployment. You can use one replacement: {0} = stage, {1} = {inputs.npm-command}.'
-        default: '{1} deploy --stage {0}'
+        description: "The command to run to do the deployment. You can use one replacement: {0} = stage, {1} = {inputs.npm-command}."
+        default: "{1} deploy --stage {0}"
     post-deploy-command:
-        description: 'The commands to run after the deployment. One command per line. You can use one replacement: {0} = stage, {1} = {inputs.npm-command}.'
-        default: ''
+        description: "The commands to run after the deployment. One command per line. You can use one replacement: {0} = stage, {1} = {inputs.npm-command}."
+        default: ""
     node-version:
-        description: 'The node version to setup'
-        default: 'lts/*'
+        description: "The node version to setup"
+        default: "lts/*"
 
 runs:
-    using: 'composite'
+    using: "composite"
     steps:
-        -   uses: actions/setup-node@v6
-            with:
-                node-version: '${{ inputs.node-version }}'
+        - uses: actions/setup-node@v6
+          with:
+              node-version: "${{ inputs.node-version }}"
 
-        -   name: Configure AWS Credentials
-            uses: aws-actions/configure-aws-credentials@v5
-            with:
-                aws-region: '${{ inputs.aws-region }}'
-                role-to-assume: '${{ inputs.aws-role-arn }}'
-                role-session-name: '${{ inputs.aws-session-name }}'
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v5
+          with:
+              aws-region: "${{ inputs.aws-region }}"
+              role-to-assume: "${{ inputs.aws-role-arn }}"
+              role-session-name: "${{ inputs.aws-session-name }}"
 
-        -   name: Install packages
-            shell: bash
-            working-directory: '${{ inputs.chroot }}'
-            run: '${{ inputs.package-install-command }}'
+        - name: Install packages
+          shell: bash
+          working-directory: "${{ inputs.chroot }}"
+          run: |
+              ${{ inputs.package-install-command }}
 
-        -   name: Deploy serverless
-            shell: bash
-            working-directory: '${{ inputs.chroot }}'
-            run: '${{ format(inputs.deploy-command, inputs.stage, inputs.npm-command) }}'
+        - name: Deploy serverless
+          shell: bash
+          working-directory: "${{ inputs.chroot }}"
+          run: |
+              ${{ format(inputs.deploy-command, inputs.stage, inputs.npm-command) }}
 
-        -   name: Post deploy command
-            if: inputs.post-deploy-command != ''
-            shell: bash
-            working-directory: '${{ inputs.chroot }}'
-            run: '${{ format(inputs.post-deploy-command, inputs.stage, inputs.npm-command) }}'
+        - name: Post deploy command
+          if: inputs.post-deploy-command != ''
+          shell: bash
+          working-directory: "${{ inputs.chroot }}"
+          run: |
+              ${{ format(inputs.post-deploy-command, inputs.stage, inputs.npm-command) }}
