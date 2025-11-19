@@ -1,94 +1,94 @@
-name: 'AWS: ECR build & push'
-description: 'Build & push a Docker container to AWS ECR.'
-author: 'XIP Online Applications'
+name: "AWS: ECR build & push"
+description: "Build & push a Docker container to AWS ECR."
+author: "XIP Online Applications"
 
 branding:
-    icon: 'code'
-    color: 'blue'
+    icon: "code"
+    color: "blue"
 
 inputs:
     repository:
-        description: 'The repository name to push the image to.'
+        description: "The repository name to push the image to."
         required: true
     aws-role-arn:
-        description: 'The AWS role to assume and perform AWS actions with.'
+        description: "The AWS role to assume and perform AWS actions with."
         required: true
     aws-region:
-        description: 'The AWS region to push the image to.'
+        description: "The AWS region to push the image to."
         required: true
     aws-session-name:
-        description: 'The AWS session name to use when assuming the AWS role.'
-        default: 'xip-gha-aws-ecr-build-push'
+        description: "The AWS session name to use when assuming the AWS role."
+        default: "xip-gha-aws-ecr-build-push"
     tag:
-        description: 'The tag to apply to the container.'
-        default: 'latest'
+        description: "The tag to apply to the container."
+        default: "latest"
     context:
-        description: 'The context to build the container from.'
-        default: '.'
+        description: "The context to build the container from."
+        default: "."
     dockerfile:
-        description: 'The Dockerfile to use in the build.'
-        default: 'Dockerfile'
+        description: "The Dockerfile to use in the build."
+        default: "Dockerfile"
     build-args:
-        description: 'List of build-time variables.'
-        default: ''
+        description: "List of build-time variables."
+        default: ""
     target:
-        description: 'The target to use in the build.'
+        description: "The target to use in the build."
         required: false
     platforms:
-        description: 'The comma separated list of platforms to build the container for.'
-        default: 'linux/amd64'
+        description: "The comma separated list of platforms to build the container for."
+        default: "linux/amd64"
 
 outputs:
     registry:
         value: ${{ steps.login-ecr.outputs.registry }}
-        description: 'The ECR registry the image has been pushed to.'
+        description: "The ECR registry the image has been pushed to."
 
 runs:
-    using: 'composite'
+    using: "composite"
     steps:
-        -   name: Outputs
-            id: vars
-            shell: bash
-            run: |
-                echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        - name: Outputs
+          id: vars
+          shell: bash
+          run: |
+              echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-        -   name: Set up QEMU
-            uses: docker/setup-qemu-action@v3
+        - name: Set up QEMU
+          uses: docker/setup-qemu-action@v3
 
-        -   name: Set up Docker Buildx
-            uses: docker/setup-buildx-action@v3
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
 
-        -   name: Configure AWS Credentials
-            uses: aws-actions/configure-aws-credentials@v5
-            with:
-                aws-region: ${{ inputs.aws-region }}
-                role-to-assume: ${{ inputs.aws-role-arn }}
-                role-session-name: ${{ inputs.aws-session-name }}
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v5
+          with:
+              aws-region: ${{ inputs.aws-region }}
+              role-to-assume: ${{ inputs.aws-role-arn }}
+              role-session-name: ${{ inputs.aws-session-name }}
 
-        -   name: Login to Amazon ECR
-            id: login-ecr
-            uses: aws-actions/amazon-ecr-login@v2
+        - name: Login to Amazon ECR
+          id: login-ecr
+          uses: aws-actions/amazon-ecr-login@v2
 
-        -   name: Login to Amazon ECR with Docker
-            uses: docker/login-action@v3
-            with:
-                registry: ${{ steps.login-ecr.outputs.registry }}
+        - name: Login to Amazon ECR with Docker
+          uses: docker/login-action@v3
+          with:
+              registry: ${{ steps.login-ecr.outputs.registry }}
 
-        -   name: Builder
-            shell: bash
-            run: |
-                docker buildx create --name b${{ steps.vars.outputs.sha_short }} --use
-        -   name: Build and push
-            uses: docker/build-push-action@v6
-            with:
-                context: ${{ inputs.context }}
-                file: ${{ inputs.dockerfile }}
-                target: ${{ inputs.target }}
-                push: true
-                tags: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}
-                build-args: |
-                    ${{ inputs.build-args }}
-                platforms: ${{ inputs.platforms }}
-                builder: b${{ steps.vars.outputs.sha_short }}
-                cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:cache
-                cache-to: type=registry,mode=max,image-manifest=true,oci-mediatypes=true,ref=${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:cache
+        - name: Builder
+          shell: bash
+          run: |
+              docker buildx create --name b${{ steps.vars.outputs.sha_short }} --use
+        - name: Build and push
+          uses: docker/build-push-action@v6
+          with:
+              context: ${{ inputs.context }}
+              file: ${{ inputs.dockerfile }}
+              target: ${{ inputs.target }}
+              push: true
+              tags: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}
+              build-args: |
+                  ${{ inputs.build-args }}
+              platforms: ${{ inputs.platforms }}
+              builder: b${{ steps.vars.outputs.sha_short }}
+              cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:cache
+              cache-to: type=registry,mode=max,image-manifest=true,oci-mediatypes=true,ref=${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:cache

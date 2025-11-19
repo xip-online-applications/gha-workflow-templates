@@ -1,53 +1,56 @@
-name: 'GuardDog'
-description: 'Run GuardDog security scans on your NPM packages.'
-author: 'XIP Online Applications'
+name: "GuardDog"
+description: "Run GuardDog security scans on your [ extension, github_action, go, npm, pypi ] packages."
+author: "XIP Online Applications"
 
 branding:
-    icon: 'shield'
-    color: 'red'
+    icon: "shield"
+    color: "red"
 
 inputs:
     dir:
-        description: 'The directory which contains the npm packages.json'
-        default: '.'
+        description: "The directory which contains the [ package.json, requirements.txt ] file"
+        default: "."
     git-crypt-key:
-        description: 'The base64 encoded git-crypt decryption key'
+        description: "The base64 encoded git-crypt decryption key"
         required: false
+    package-manager:
+        description: "[ extension, github_action, go, npm, pypi ]"
+        default: "npm"
 
 runs:
-    using: 'composite'
+    using: "composite"
     steps:
-        -   name: Paths Changes Filter
-            uses: dorny/paths-filter@v3
-            id: changes
-            with:
-                filters: |
-                    dir:
-                        - '${{ inputs.dir }}/**'
+        - name: Paths Changes Filter
+          uses: dorny/paths-filter@v3
+          id: changes
+          with:
+              filters: |
+                  dir:
+                      - '${{ inputs.dir }}/**'
 
-        -   name: Git-crypt unlock
-            if: ${{ inputs.git-crypt-key != '' }} && ${{ steps.changes.outputs.dir == 'true' }}
-            uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
-            with:
-                git-crypt-key: ${{ inputs.git-crypt-key }}
+        - name: Git-crypt unlock
+          if: ${{ inputs.git-crypt-key != '' }} && ${{ steps.changes.outputs.dir == 'true' }}
+          uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
+          with:
+              git-crypt-key: ${{ inputs.git-crypt-key }}
 
-        -   name: Setup Guarddog
-            if: ${{ steps.changes.outputs.dir == 'true' }}
-            shell: bash
-            run: |
-                pipx install guarddog
+        - name: Setup Guarddog
+          if: ${{ steps.changes.outputs.dir == 'true' }}
+          shell: bash
+          run: |
+              pipx install guarddog
 
-        -   name: Run GuardDog scans
-            if: ${{ steps.changes.outputs.dir == 'true' }}
-            shell: bash
-            working-directory: ${{ inputs.dir }}
-            run: |
-                guarddog npm scan ./ --output-format json > /tmp/guarddog-results.json
-                jq -r '("Heuristic\t#"), (.results | to_entries[] | "\(.key)\t\(.value | length)")' /tmp/guarddog-results.json
+        - name: Run GuardDog scans
+          if: ${{ steps.changes.outputs.dir == 'true' }}
+          shell: bash
+          working-directory: ${{ inputs.dir }}
+          run: |
+              guarddog ${{ inputs.package-manager }} scan ./ --output-format json > /tmp/guarddog-results.json
+              jq -r '("Heuristic\t#"), (.results | to_entries[] | "\(.key)\t\(.value | length)")' /tmp/guarddog-results.json
 
-                ISSUES=$(jq '.results | to_entries[] | .value | length' /tmp/guarddog-results.json | awk '{s+=$1} END {print s}')
+              ISSUES=$(jq '.results | to_entries[] | .value | length' /tmp/guarddog-results.json | awk '{s+=$1} END {print s}')
 
-                if [ "$ISSUES" -gt 0 ]; then
-                    guarddog npm scan ./
-                    exit 1
-                fi
+              if [ "$ISSUES" -gt 0 ]; then
+                  guarddog ${{ inputs.package-manager }} scan ./
+                  exit 1
+              fi

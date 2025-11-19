@@ -1,64 +1,64 @@
-name: 'Local Docker build'
-description: 'Build a Docker image locally for use during the action with GHA caching.'
-author: 'XIP Online Applications'
+name: "Local Docker build"
+description: "Build a Docker image locally for use during the action with GHA caching."
+author: "XIP Online Applications"
 
 branding:
-    icon: 'code'
-    color: 'blue'
+    icon: "code"
+    color: "blue"
 
 inputs:
     repository:
-        description: 'The repository to apply to the container.'
-        default: 'local/docker-build'
+        description: "The repository to apply to the container."
+        default: "local/docker-build"
     tag:
-        description: 'The tag to apply to the container.'
-        default: 'latest'
+        description: "The tag to apply to the container."
+        default: "latest"
     context:
-        description: 'The context to build the container from.'
-        default: '.'
+        description: "The context to build the container from."
+        default: "."
     dockerfile:
-        description: 'The Dockerfile to use in the build.'
-        default: 'Dockerfile'
+        description: "The Dockerfile to use in the build."
+        default: "Dockerfile"
     build-args:
-        description: 'List of build-time variables.'
-        default: ''
+        description: "List of build-time variables."
+        default: ""
     target:
-        description: 'The target to use in the build.'
+        description: "The target to use in the build."
         required: false
     platforms:
-        description: 'The comma separated list of platforms to build the container for.'
-        default: 'linux/amd64'
+        description: "The comma separated list of platforms to build the container for."
+        default: "linux/amd64"
 
 outputs:
     repository:
         value: ${{ inputs.repository }}
-        description: 'The repository.'
+        description: "The repository."
     tag:
         value: ${{ inputs.tag }}
-        description: 'The tag.'
+        description: "The tag."
     image:
         value: ${{ inputs.repository }}:${{ inputs.tag }}
-        description: 'The full image with tag.'
+        description: "The full image with tag."
 
 runs:
-    using: 'composite'
+    using: "composite"
     steps:
-        -   name: Set up QEMU
-            uses: docker/setup-qemu-action@v3
+        - name: Set up QEMU
+          uses: docker/setup-qemu-action@v3
 
-        -   name: Set up Docker Buildx
-            uses: docker/setup-buildx-action@v3
-            with:
-                driver: docker
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+          with:
+              driver: docker
 
-        -   name: Build and push
-            uses: docker/build-push-action@v6
-            with:
-                context: ${{ inputs.context }}
-                file: ${{ inputs.dockerfile }}
-                target: ${{ inputs.target }}
-                load: true
-                tags: ${{ inputs.repository }}:${{ inputs.tag }}
-                build-args: |
-                    ${{ inputs.build-args }}
-                platforms: ${{ inputs.platforms }}
+        - name: Build and push
+          uses: docker/build-push-action@v6
+          with:
+              context: ${{ inputs.context }}
+              file: ${{ inputs.dockerfile }}
+              target: ${{ inputs.target }}
+              load: true
+              tags: ${{ inputs.repository }}:${{ inputs.tag }}
+              build-args: |
+                  ${{ inputs.build-args }}
+              platforms: ${{ inputs.platforms }}
