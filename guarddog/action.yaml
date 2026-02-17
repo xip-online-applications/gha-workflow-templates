@@ -23,13 +23,14 @@ runs:
         - name: Paths Changes Filter
           uses: dorny/paths-filter@v3
           id: changes
+          continue-on-error: true
           with:
               filters: |
                   dir:
                       - '${{ inputs.dir }}/**'
 
         - name: Git-crypt unlock
-          if: ${{ inputs.git-crypt-key != '' }} && ${{ steps.changes.outputs.dir == 'true' }}
+          if: ${{ inputs.git-crypt-key != '' && steps.changes.outputs.dir == 'true' }}
           uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
           with:
               git-crypt-key: ${{ inputs.git-crypt-key }}
