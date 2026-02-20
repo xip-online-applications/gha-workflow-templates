@@ -1,0 +1,60 @@
+name: "DataDog Static Analyzer"
+description: "Run DataDog Static Analyzer security scans on Docker, Java, JavaScript, PHP, Python, TypeScript"
+
+branding:
+    icon: "shield"
+    color: "red"
+
+inputs:
+    git-crypt-key:
+        description: "The base64 encoded git-crypt decryption key"
+        required: false
+    dd_app_key:
+        description: "DataDog application key with permissions to create SAST reports"
+        required: true
+    dd_api_key:
+        description: "DataDog API key with permissions to create SAST reports"
+        required: true
+    dd_site:
+        description: "DataDog site to send the SAST report to (e.g. datadoghq.com, datadoghq.eu)"
+        default: "datadoghq.eu"
+    cpu_count:
+        description: "Number of CPUs to use for the scan"
+        default: "2"
+    enable_performance_statistics:
+        description: "Whether to enable performance statistics collection during the scan. This may increase scan time and resource usage, but can provide valuable insights into scan performance."
+        default: "false"
+    subdirectory:
+        description: "The subdirectory to run the scan in, relative to the repository root. This can be used to limit the scan to a specific part of the codebase. If not set, the scan will run in the repository root."
+        default: ""
+    diff_aware:
+        description: "Whether to enable diff-aware scanning, which limits the scan to files changed in the current pull request. This can help reduce scan time and focus on relevant changes."
+        default: "true"
+    secrets_enabled:
+        description: "Whether to enable secrets scanning. This can help identify hardcoded secrets in the codebase, but may increase scan time and resource usage."
+        default: "false"
+    static_analysis_enabled:
+        description: "Whether to enable static analysis scanning. This can help identify security vulnerabilities in the codebase, but may increase scan time and resource usage."
+        default: "true"
+
+runs:
+    using: "composite"
+    steps:
+        - name: Git-crypt unlock
+          if: ${{ inputs.git-crypt-key != '' && steps.changes.outputs.dir == 'true' }}
+          uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
+          with:
+              git-crypt-key: ${{ inputs.git-crypt-key }}
+
+        - name: DataDog Static Analyzer
+          uses: DataDog/datadog-static-analyzer-github-action@v3
+          with:
+              dd_app_key: ${{ inputs.dd_app_key }}
+              dd_api_key: ${{ inputs.dd_api_key }}
+              dd_site: ${{ inputs.dd_site }}
+              cpu_count: ${{ inputs.cpu_count }}
+              enable_performance_statistics: ${{ inputs.enable_performance_statistics }}
+              subdirectory: ${{ inputs.subdirectory }}
+              diff_aware: ${{ inputs.diff_aware }}
+              secrets_enabled: ${{ inputs.secrets_enabled }}
+              static_analysis_enabled: ${{ inputs.static_analysis_enabled }}
