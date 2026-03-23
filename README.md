@@ -19,7 +19,7 @@ following workflows:
 * [guarddog](./guarddog): Scan packages for supply-chain security issues with GuardDog.
 * [helm-lint](./helm-lint): Lint a [Helm](https://helm.sh/) chart;
 * [local-docker-build](./local-docker-build): Build a Docker image locally with GitHub Actions cache support.
-* [nx-s3-deploy](./nx-s3-deploy): Builds your Agular app, then deploys to S3.
+* [nx-s3-deploy](./nx-s3-deploy): Builds your Angular app, then deploys to S3.
 
 ## Usage
 
