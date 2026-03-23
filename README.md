@@ -31,10 +31,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
 
             - name: Git-crypt unlock
               uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
               with:
-                git-crypt-key: 'xxx'
+                git-crypt-key: 'MDExOC05OTktODgxOTktOTExOS03MjUtMwo='
 ```
