@@ -1,35 +1,55 @@
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
+    - package-ecosystem: "github-actions"
+      directory: "/"
+      schedule:
+          interval: "monthly"
 
-  - package-ecosystem: "github-actions"
-    directory: "/aws-ecr-build-push"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "github-actions"
-    directory: "/aws-eks-helm-deploy"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "github-actions"
-    directory: "/aws-serverless-deploy"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "github-actions"
-    directory: "/ghcr-build-push"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "github-actions"
-    directory: "/git-crypt-unlock"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "github-actions"
-    directory: "/helm-lint"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "github-actions"
-    directory: "/local-docker-build"
-    schedule:
-      interval: "weekly"
+    - package-ecosystem: "github-actions"
+      directory: "/aws-ecr-build-push"
+      schedule:
+          interval: "monthly"
+    - package-ecosystem: "github-actions"
+      directory: "/aws-eks-helm-deploy"
+      schedule:
+          interval: "monthly"
+    - package-ecosystem: "github-actions"
+      directory: "/aws-eks-vpc-update"
+      schedule:
+          interval: "monthly"
+    - package-ecosystem: "github-actions"
+      directory: "/aws-serverless-deploy"
+      schedule:
+          interval: "monthly"
+    - package-ecosystem: "github-actions"
+      directory: "/datadog-static-analyzer"
+      schedule:
+          interval: "monthly"
+    - package-ecosystem: "github-actions"
+      directory: "/ghcr-build-push"
+      schedule:
+          interval: "monthly"
+    - package-ecosystem: "github-actions"
+      directory: "/ghcr-login"
+      schedule:
+          interval: "monthly"
+    - package-ecosystem: "github-actions"
+      directory: "/git-crypt-unlock"
+      schedule:
+          interval: "monthly"
+    - package-ecosystem: "github-actions"
+      directory: "/guarddog"
+      schedule:
+          interval: "monthly"
+    - package-ecosystem: "github-actions"
+      directory: "/helm-lint"
+      schedule:
+          interval: "monthly"
+    - package-ecosystem: "github-actions"
+      directory: "/local-docker-build"
+      schedule:
+          interval: "monthly"
+    - package-ecosystem: "github-actions"
+      directory: "/nx-s3-deploy"
+      schedule:
+          interval: "monthly"
