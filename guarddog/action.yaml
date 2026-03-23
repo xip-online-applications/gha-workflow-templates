@@ -21,7 +21,7 @@ runs:
     using: "composite"
     steps:
         - name: Paths Changes Filter
-          uses: dorny/paths-filter@v3
+          uses: dorny/paths-filter@v4
           id: changes
           continue-on-error: true
           with:
