@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "skills": {
+    "ai-agentic-workflow": {
+      "source": "xip-online-applications/skills",
+      "sourceType": "github",
+      "skillPath": "skills/ai/agentic-workflow/SKILL.md",
+      "computedHash": "a5bf6346450f5ba4f51a5c30ac31eeedce17e4e00ea0dbaaf47206ba172646a8"
+    },
+    "ai-code-review": {
+      "source": "xip-online-applications/skills",
+      "sourceType": "github",
+      "skillPath": "skills/ai/code-review/SKILL.md",
+      "computedHash": "25dc0c65fbb727bb3cc483fff518d77a4de27747c8458218758adce33b55430f"
+    },
+    "ai-create-skill": {
+      "source": "xip-online-applications/skills",
+      "sourceType": "github",
+      "skillPath": "skills/ai/create-skill/SKILL.md",
+      "computedHash": "be63cc4220d4463dbb724d398b71c4ad7b852d20994f1563f704fbe27c733131"
+    },
+    "common-conventional-commits": {
+      "source": "xip-online-applications/skills",
+      "sourceType": "github",
+      "skillPath": "skills/common/conventional-commits/SKILL.md",
+      "computedHash": "bb09acc4f3808f7f6e61f70cfedeccd9074c216e52531ec48bdcc62be5b63184"
+    },
+    "common-domain-driven-design": {
+      "source": "xip-online-applications/skills",
+      "sourceType": "github",
+      "skillPath": "skills/common/ddd/SKILL.md",
+      "computedHash": "fbd30fa300d8d4b8c397f1e3130869d4fc7ad17ad5619d6420c554b52b261d4a"
+    },
+    "common-hexagonal-architecture": {
+      "source": "xip-online-applications/skills",
+      "sourceType": "github",
+      "skillPath": "skills/common/hexagonal-architecture/SKILL.md",
+      "computedHash": "9b7e6d0b764749a02635d7d947ddd4373e7af6577cd975a91354e0b9b43a488f"
+    },
+    "common-naming-conventions": {
+      "source": "xip-online-applications/skills",
+      "sourceType": "github",
+      "skillPath": "skills/common/naming-conventions/SKILL.md",
+      "computedHash": "c2adee9ea25e3e146ef94915616718e4ca2ec15578a1aab18d867b0718f8fd47"
+    },
+    "common-test-driven-development": {
+      "source": "xip-online-applications/skills",
+      "sourceType": "github",
+      "skillPath": "skills/common/test-driven-development/SKILL.md",
+      "computedHash": "5be1d6b4062bb0bea27effc22f5ae1a060371eca2a406be2d11b7f5e2a557908"
+    },
+    "nodejs-version-setup": {
+      "source": "xip-online-applications/skills",
+      "sourceType": "github",
+      "skillPath": "skills/nodejs/version-setup/SKILL.md",
+      "computedHash": "06a693dba2b8289959da7c0b7a238a7c8dc46b2fbda8f9e77117faf1eb87d692"
+    },
+    "operations-deployment-checklist": {
+      "source": "xip-online-applications/skills",
+      "sourceType": "github",
+      "skillPath": "skills/operations/deployment-checklist/SKILL.md",
+      "computedHash": "df1891e907ba0641f602889e2b8c80c853a6b8cfff54e6a8299acf01230822d5"
+    },
+    "security-defensive-programming": {
+      "source": "xip-online-applications/skills",
+      "sourceType": "github",
+      "skillPath": "skills/security/defensive-programming/SKILL.md",
+      "computedHash": "a1164f03727b4b178dea08fe7cbe9127b75a06c05d64cdd64be3d9581c3e2f42"
+    }
+  }
+}
