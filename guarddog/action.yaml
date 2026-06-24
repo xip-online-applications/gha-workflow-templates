@@ -32,29 +32,18 @@ inputs:
 runs:
     using: "composite"
     steps:
-        # - name: Paths Changes Filter
-        #   uses: dorny/paths-filter@v4
-        #   id: changes
-        #   continue-on-error: true
-        #   with:
-        #       filters: |
-        #           dir:
-        #               - '${{ inputs.dir }}/**'
-
         - name: Git-crypt unlock
-          if: ${{ inputs.git-crypt-key != '' && steps.changes.outputs.dir == 'true' }}
+          if: ${{ inputs.git-crypt-key != '' }}
           uses: xip-online-applications/gha-workflow-templates/git-crypt-unlock@main
           with:
               git-crypt-key: ${{ inputs.git-crypt-key }}
 
         - name: Setup Guarddog
-          if: ${{ steps.changes.outputs.dir == 'true' }}
           shell: bash
           run: |
               pipx install guarddog
 
         - name: Run GuardDog scans
-          if: ${{ steps.changes.outputs.dir == 'true' }}
           shell: bash
           working-directory: ${{ inputs.dir }}
           env:
