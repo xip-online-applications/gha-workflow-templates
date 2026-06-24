@@ -16,6 +16,18 @@ inputs:
     package-manager:
         description: "[ extension, github_action, go, npm, pypi ]"
         default: "npm"
+    exclude-rules:
+        description: "Comma or newline separated GuardDog rule IDs to exclude"
+        required: false
+        default: ""
+    log-level:
+        description: "GuardDog log level [debug, info, warning, error, critical]"
+        required: false
+        default: ""
+    fail-on-issues:
+        description: "Whether the action should fail when GuardDog finds issues"
+        required: false
+        default: "true"
 
 runs:
     using: "composite"
@@ -46,12 +58,31 @@ runs:
           shell: bash
           working-directory: ${{ inputs.dir }}
           run: |
-              guarddog ${{ inputs.package-manager }} scan ./ --output-format json > /tmp/guarddog-results.json
+              GUARDDOG_CMD=(guarddog)
+              if [ -n "${{ inputs.log-level }}" ]; then
+                  GUARDDOG_CMD+=(--log-level "${{ inputs.log-level }}")
+              fi
+
+              SCAN_CMD=("${GUARDDOG_CMD[@]}" "${{ inputs.package-manager }}" scan ./)
+
+              if [ -n "${{ inputs.exclude-rules }}" ]; then
+                  while IFS= read -r rule; do
+                      rule="$(echo "$rule" | xargs)"
+                      if [ -n "$rule" ]; then
+                          SCAN_CMD+=(--exclude-rules "$rule")
+                      fi
+                  done < <(printf '%s\n' "${{ inputs.exclude-rules }}" | tr ',' '\n')
+              fi
+
+              "${SCAN_CMD[@]}" --output-format json > /tmp/guarddog-results.json
               jq -r '("Heuristic\t#"), (.results | to_entries[] | "\(.key)\t\(.value | length)")' /tmp/guarddog-results.json
 
               ISSUES=$(jq '.results | to_entries[] | .value | length' /tmp/guarddog-results.json | awk '{s+=$1} END {print s}')
 
               if [ "$ISSUES" -gt 0 ]; then
-                  guarddog ${{ inputs.package-manager }} scan ./
-                  exit 1
+                  "${SCAN_CMD[@]}"
+
+                  if [ "${{ inputs.fail-on-issues }}" = "true" ]; then
+                      exit 1
+                  fi
               fi
