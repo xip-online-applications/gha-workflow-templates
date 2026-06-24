@@ -16,6 +16,22 @@ inputs:
     package-manager:
         description: "[ extension, github_action, go, npm, pypi ]"
         default: "npm"
+    exclude-rules:
+        description: "Comma or newline separated GuardDog rule IDs to exclude"
+        required: false
+        default: ""
+    log-level:
+        description: "GuardDog log level [debug, info, warning, error, critical]"
+        required: false
+        default: ""
+    fail-on-issues:
+        description: "Whether the action should fail when GuardDog finds issues"
+        required: false
+        default: "true"
+    fail-score-threshold:
+        description: "Fail only when GuardDog assessment score is greater than or equal to this threshold"
+        required: false
+        default: "7.6"
 
 runs:
     using: "composite"
@@ -45,13 +61,50 @@ runs:
           if: ${{ steps.changes.outputs.dir == 'true' }}
           shell: bash
           working-directory: ${{ inputs.dir }}
+          env:
+              INPUT_LOG_LEVEL: ${{ inputs.log-level }}
+              INPUT_PACKAGE_MANAGER: ${{ inputs.package-manager }}
+              INPUT_EXCLUDE_RULES: ${{ inputs.exclude-rules }}
+              INPUT_FAIL_ON_ISSUES: ${{ inputs.fail-on-issues }}
+              INPUT_FAIL_SCORE_THRESHOLD: ${{ inputs.fail-score-threshold }}
           run: |
-              guarddog ${{ inputs.package-manager }} scan ./ --output-format json > /tmp/guarddog-results.json
+              GUARDDOG_CMD=(guarddog)
+              if [ -n "$INPUT_LOG_LEVEL" ]; then
+                  GUARDDOG_CMD+=(--log-level "$INPUT_LOG_LEVEL")
+              fi
+
+              SCAN_CMD=("${GUARDDOG_CMD[@]}" "$INPUT_PACKAGE_MANAGER" scan ./)
+
+              if [ -n "$INPUT_EXCLUDE_RULES" ]; then
+                  while IFS= read -r rule; do
+                      rule="$(echo "$rule" | xargs)"
+                      if [ -n "$rule" ]; then
+                          SCAN_CMD+=(--exclude-rules "$rule")
+                      fi
+                  done < <(printf '%s\n' "$INPUT_EXCLUDE_RULES" | tr ',' '\n')
+              fi
+
+              "${SCAN_CMD[@]}" --output-format json > /tmp/guarddog-results.json
               jq -r '("Heuristic\t#"), (.results | to_entries[] | "\(.key)\t\(.value | length)")' /tmp/guarddog-results.json
 
-              ISSUES=$(jq '.results | to_entries[] | .value | length' /tmp/guarddog-results.json | awk '{s+=$1} END {print s}')
+              HEURISTIC_HITS=$(jq '.results | to_entries[] | .value | length' /tmp/guarddog-results.json | awk '{s+=$1} END {print s}')
+              HEURISTIC_HITS=${HEURISTIC_HITS:-0}
 
-              if [ "$ISSUES" -gt 0 ]; then
-                  guarddog ${{ inputs.package-manager }} scan ./
-                  exit 1
+              if [ "$HEURISTIC_HITS" -gt 0 ]; then
+                  "${SCAN_CMD[@]}" | tee /tmp/guarddog-scan-results.txt
+
+                  RISKS=$(grep -Eo '^[0-9]+ risks detected' /tmp/guarddog-scan-results.txt | awk '{print $1}' | tail -n1 || true)
+                  RISKS=${RISKS:-0}
+
+                  ASSESSMENT_SCORE=$(grep -Eo '\([0-9]+(\.[0-9]+)?/10\)' /tmp/guarddog-scan-results.txt | tail -n1 | sed -E 's/^\(([0-9]+(\.[0-9]+)?)\/10\)$/\1/' || true)
+                  ASSESSMENT_SCORE=${ASSESSMENT_SCORE:-0}
+
+                  SHOULD_FAIL=1
+                  if awk -v score="$ASSESSMENT_SCORE" -v threshold="$INPUT_FAIL_SCORE_THRESHOLD" 'BEGIN { exit !(score >= threshold) }'; then
+                      SHOULD_FAIL=0
+                  fi
+
+                  if [ "$INPUT_FAIL_ON_ISSUES" = "true" ] && [ "$RISKS" -gt 0 ] && [ "$SHOULD_FAIL" -eq 0 ]; then
+                      exit 1
+                  fi
               fi
