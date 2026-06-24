@@ -57,21 +57,26 @@ runs:
           if: ${{ steps.changes.outputs.dir == 'true' }}
           shell: bash
           working-directory: ${{ inputs.dir }}
+          env:
+              INPUT_LOG_LEVEL: ${{ inputs.log-level }}
+              INPUT_PACKAGE_MANAGER: ${{ inputs.package-manager }}
+              INPUT_EXCLUDE_RULES: ${{ inputs.exclude-rules }}
+              INPUT_FAIL_ON_ISSUES: ${{ inputs.fail-on-issues }}
           run: |
               GUARDDOG_CMD=(guarddog)
-              if [ -n "${{ inputs.log-level }}" ]; then
-                  GUARDDOG_CMD+=(--log-level "${{ inputs.log-level }}")
+              if [ -n "$INPUT_LOG_LEVEL" ]; then
+                  GUARDDOG_CMD+=(--log-level "$INPUT_LOG_LEVEL")
               fi
 
-              SCAN_CMD=("${GUARDDOG_CMD[@]}" "${{ inputs.package-manager }}" scan ./)
+              SCAN_CMD=("${GUARDDOG_CMD[@]}" "$INPUT_PACKAGE_MANAGER" scan ./)
 
-              if [ -n "${{ inputs.exclude-rules }}" ]; then
+              if [ -n "$INPUT_EXCLUDE_RULES" ]; then
                   while IFS= read -r rule; do
                       rule="$(echo "$rule" | xargs)"
                       if [ -n "$rule" ]; then
                           SCAN_CMD+=(--exclude-rules "$rule")
                       fi
-                  done < <(printf '%s\n' "${{ inputs.exclude-rules }}" | tr ',' '\n')
+                  done < <(printf '%s\n' "$INPUT_EXCLUDE_RULES" | tr ',' '\n')
               fi
 
               "${SCAN_CMD[@]}" --output-format json > /tmp/guarddog-results.json
@@ -82,7 +87,7 @@ runs:
               if [ "$ISSUES" -gt 0 ]; then
                   "${SCAN_CMD[@]}"
 
-                  if [ "${{ inputs.fail-on-issues }}" = "true" ]; then
+                  if [ "$INPUT_FAIL_ON_ISSUES" = "true" ]; then
                       exit 1
                   fi
               fi
