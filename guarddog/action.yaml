@@ -59,13 +59,13 @@ runs:
               git-crypt-key: ${{ inputs.git-crypt-key }}
 
         - name: Setup Guarddog
-          if: ${{ steps.changes.outputs.dir == 'true' }}
+          if: ${{ steps.changes.outputs.dir == 'true' || inputs.verify != '' }}
           shell: bash
           run: |
               pipx install guarddog
 
         - name: Run GuardDog scans
-          if: ${{ steps.changes.outputs.dir == 'true' }}
+          if: ${{ steps.changes.outputs.dir == 'true' || inputs.verify != '' }}
           shell: bash
           working-directory: ${{ inputs.dir }}
           env:
@@ -98,9 +98,45 @@ runs:
               fi
 
               "${SCAN_CMD[@]}" --output-format json > /tmp/guarddog-results.json
-              jq -r '("Heuristic\t#"), (.results | to_entries[] | "\(.key)\t\(.value | length)")' /tmp/guarddog-results.json
 
-              HEURISTIC_HITS=$(jq '.results | to_entries[] | .value | length' /tmp/guarddog-results.json | awk '{s+=$1} END {print s}')
+              if jq -e 'type == "object" and has("results") and (.results | type) == "object"' /tmp/guarddog-results.json > /dev/null; then
+                  jq -r '("Heuristic\t#"), (.results | to_entries[] | "\(.key)\t\(.value | length)")' /tmp/guarddog-results.json
+              elif jq -e 'type == "array"' /tmp/guarddog-results.json > /dev/null; then
+                  echo "Heuristic\t#"
+                  jq -r '
+                    [
+                      .[]
+                      | select(type == "object" and has("results") and (.results | type) == "object")
+                      | .results
+                      | to_entries[]
+                      | .key
+                    ]
+                    | group_by(.)
+                    | .[]
+                    | "\(.[0])\t\(length)"
+                  ' /tmp/guarddog-results.json
+              else
+                  echo "Heuristic\t#"
+              fi
+
+              HEURISTIC_HITS=$(jq '
+                def count_results:
+                  if type == "object" and has("results") and (.results | type) == "object" then
+                    [ .results | to_entries[] | (.value | length) ] | add // 0
+                  elif type == "array" then
+                    [
+                      .[]
+                      | if type == "object" and has("results") and (.results | type) == "object" then
+                          [ .results | to_entries[] | (.value | length) ] | add // 0
+                        else
+                          0
+                        end
+                    ] | add // 0
+                  else
+                    0
+                  end;
+                count_results
+              ' /tmp/guarddog-results.json)
               HEURISTIC_HITS=${HEURISTIC_HITS:-0}
 
               if [ "$HEURISTIC_HITS" -gt 0 ]; then
