@@ -10,6 +10,9 @@ inputs:
     dir:
         description: "The directory which contains the [ package.json, requirements.txt ] file"
         default: "."
+    file:
+        description: "Specify a particular file to scan, e.g. package.json or requirements.txt. If not specified, GuardDog will scan the entire directory."
+        default: "./"
     git-crypt-key:
         description: "The base64 encoded git-crypt decryption key"
         required: false
@@ -67,13 +70,14 @@ runs:
               INPUT_EXCLUDE_RULES: ${{ inputs.exclude-rules }}
               INPUT_FAIL_ON_ISSUES: ${{ inputs.fail-on-issues }}
               INPUT_FAIL_SCORE_THRESHOLD: ${{ inputs.fail-score-threshold }}
+              INPUT_FILE: ${{ inputs.file }}
           run: |
               GUARDDOG_CMD=(guarddog)
               if [ -n "$INPUT_LOG_LEVEL" ]; then
                   GUARDDOG_CMD+=(--log-level "$INPUT_LOG_LEVEL")
               fi
 
-              SCAN_CMD=("${GUARDDOG_CMD[@]}" "$INPUT_PACKAGE_MANAGER" scan ./)
+              SCAN_CMD=("${GUARDDOG_CMD[@]}" "$INPUT_PACKAGE_MANAGER" scan "$INPUT_FILE")
 
               if [ -n "$INPUT_EXCLUDE_RULES" ]; then
                   while IFS= read -r rule; do
