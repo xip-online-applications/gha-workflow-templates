@@ -6,6 +6,9 @@ on:
             - "guarddog/**"
             - ".github/workflows/test-guarddog.yaml"
 
+permissions:
+    contents: read
+
 jobs:
     job:
         name: Test guarddog
