@@ -51,11 +51,24 @@ runs:
           with:
               git-crypt-key: ${{ inputs.git-crypt-key }}
 
+        # GuardDog depends on pygit2, which has no wheels for the runner's default Python yet
+        # (3.14 on ubuntu-26.04), so pipx would build it from source and fail without libgit2.
+        # update-environment: false keeps this Python out of the caller's later steps.
+        - name: Setup Python for GuardDog
+          if: ${{ steps.changes.outputs.dir == 'true' }}
+          id: python
+          uses: actions/setup-python@v7
+          with:
+              python-version: "3.13"
+              update-environment: false
+
         - name: Setup Guarddog
           if: ${{ steps.changes.outputs.dir == 'true' }}
           shell: bash
+          env:
+              PYTHON_PATH: ${{ steps.python.outputs.python-path }}
           run: |
-              pipx install guarddog
+              pipx install --python "$PYTHON_PATH" guarddog
 
         - name: Run GuardDog scans
           if: ${{ steps.changes.outputs.dir == 'true' }}
