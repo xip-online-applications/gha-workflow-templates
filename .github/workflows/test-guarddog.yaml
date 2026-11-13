@@ -1,0 +1,24 @@
+name: "Test guarddog"
+
+on:
+    pull_request:
+        paths:
+            - "guarddog/**"
+            - ".github/workflows/test-guarddog.yaml"
+
+permissions:
+    contents: read
+
+jobs:
+    job:
+        name: Test guarddog
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v7
+
+            - name: GuardDog
+              uses: ./guarddog
+              with:
+                  dir: "guarddog"
+                  package-manager: "github_action"
